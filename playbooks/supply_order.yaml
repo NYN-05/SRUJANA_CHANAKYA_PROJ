@@ -1,0 +1,159 @@
+# Supply or order: goods and made-to-order work (TECHNICAL.md › Playbooks section 2).
+# Hindi text is a draft and needs native-speaker review (Q-17). Legal hints need lawyer review (Q-02 to Q-07).
+key: supply_order
+version: 1
+title: {en: Supply or order, hi: सप्लाई या ऑर्डर}
+ack_window: 5
+terms:
+  - key: parties
+    label: {en: Parties, hi: पक्ष}
+    required: true
+    weight: 10
+    type: party
+    ask_order: 8
+    parsers: []
+    ambiguity: []
+    pairs_with: []
+    cues: {en: []}
+    model_aliases: [buyer, seller]
+  - key: scope
+    label: {en: What is being supplied, hi: क्या सप्लाई होना है}
+    required: true
+    weight: 10
+    type: text
+    ask_order: 7
+    parsers: [quantities]
+    ambiguity: []
+    pairs_with: [quantity]
+    cues: {en: [order, supply, goods, items]}
+    model_aliases: [item]
+  - key: quantity
+    label: {en: Quantity, hi: मात्रा}
+    required: true
+    weight: 10
+    type: quantity
+    ask_order: 6
+    parsers: [quantities]
+    ambiguity: [vague_qty]
+    pairs_with: [scope]
+    # The unit words this deal type counts in (extra units for the quantity parser).
+    cues:
+      en: [shirts, shirt, tshirts, pcs, pc, pieces, piece, kg, kgs, kilos, bags, bag, boxes, box, cartons, packets,
+           sets, items, units, nos, meters, metres, litres, liters, bottles, cups, mugs, mug, banners, banner,
+           posters, poster, cards, pages, sheets, plates, copies, logos, designs, sarees, kurtas]
+    model_aliases: [qty]
+  - key: price
+    label: {en: Price, hi: कीमत}
+    required: true
+    weight: 15
+    type: money
+    ask_order: 3
+    parsers: [amounts]
+    ambiguity: [approx_amount]
+    pairs_with: []
+    cues: {en: [price, rate, cost, total, each], hi: [daam, keemat]}
+    model_aliases: [unit_price, total_amount]
+  - key: advance
+    label: {en: Advance paid or due, hi: एडवांस दिया या देना है}
+    required: true
+    weight: 10
+    type: money
+    ask_order: 5
+    parsers: [amounts, percent, payment]
+    ambiguity: [half_adv, vague_pay]
+    pairs_with: [final_payment]
+    cues: {en: [advance, upfront], hi: [peshgi, एडवांस]}
+    model_aliases: [advance_amount]
+  - key: delivery_date
+    label: {en: Delivery date, hi: डिलीवरी की तारीख}
+    required: true
+    weight: 15
+    type: date
+    ask_order: 1
+    parsers: [dates]
+    ambiguity: [rel_date, partial_date, order_date]
+    pairs_with: [final_payment]
+    cues: {en: [delivery, deliver, delivered, dispatch, ready], hi: [डिलीवरी]}
+    model_aliases: [delivery]
+  - key: final_payment
+    label: {en: Balance and when it is due, hi: बाकी रकम और कब देनी है}
+    required: true
+    weight: 15
+    type: money
+    ask_order: 2
+    parsers: [amounts, payment, dates]
+    ambiguity: [vague_pay]
+    pairs_with: [delivery_date, advance]
+    cues: {en: [balance, remaining, rest, final payment], hi: [baaki, baki, बाकी]}
+    model_aliases: [balance_payment_date, balance_amount]
+  - key: late_penalty
+    label: {en: What happens if late, hi: देरी होने पर क्या होगा}
+    required: true
+    weight: 15
+    type: text
+    ask_order: 4
+    parsers: [penalty]
+    ambiguity: []
+    pairs_with: [delivery_date]
+    cues: {en: [late, penalty, deduct, deduction], hi: [jurmana, जुर्माना]}
+    model_aliases: [penalty]
+  - key: gst_status
+    label: {en: "GST on the price (included, extra, not applicable)", hi: "कीमत पर GST (शामिल, अलग, लागू नहीं)"}
+    required: false
+    weight: 0
+    type: enum
+    ask_order: 9
+    parsers: []
+    ambiguity: []
+    pairs_with: [price]
+    cues: {en: [gst]}
+    model_aliases: [gst]
+ambiguity_rules:
+  - id: rel_date
+    type: AMBIGUOUS_DATE
+    patterns: [next week, this month, soon, kal, parso, jaldi]
+    reason:
+      en: "A relative date with no fixed day. 'Next week' could be 5 to 12 days away depending on the reader."
+      hi: "तारीख पक्की नहीं है। 'अगले हफ्ते' का मतलब पढ़ने वाले के हिसाब से 5 से 12 दिन तक हो सकता है।"
+  - id: partial_date
+    type: AMBIGUOUS_DATE
+    patterns: ["15th"]
+    reason: {en: "The date is missing its month or year.", hi: "तारीख में महीना या साल नहीं है।"}
+  - id: order_date
+    type: AMBIGUOUS_DATE
+    patterns: ["03/04/2026"]
+    reason: {en: "This date can be read two ways: day first or month first.", hi: "यह तारीख दो तरह से पढ़ी जा सकती है: पहले दिन या पहले महीना।"}
+  - id: approx_amount
+    type: AMBIGUOUS_AMOUNT
+    patterns: [approx, around, about, lagbhag, 40 to 50k]
+    reason: {en: "This is an approximate or ranged price, not a fixed one.", hi: "यह अनुमानित या रेंज वाली कीमत है, तय कीमत नहीं।"}
+  - id: vague_qty
+    type: VAGUE_QUANTITY
+    patterns: [some, a few, as needed, zarurat ke hisaab se]
+    reason: {en: "The quantity is not a number.", hi: "मात्रा कोई संख्या नहीं है।"}
+  - id: vague_pay
+    type: VAGUE_PAYMENT
+    patterns: [will pay soon, later, baad mein, when I can]
+    reason: {en: "'Soon' does not give a payment date.", hi: "'जल्दी' से भुगतान की तारीख पता नहीं चलती।"}
+  - id: half_adv
+    type: VAGUE_PAYMENT
+    patterns: [half advance]
+    reason: {en: "Half of what? The total price is not fixed yet.", hi: "आधा किसका? कुल कीमत अभी तय नहीं है।"}
+legal_hints:
+  - id: property_hint
+    when: {keywords: [plot, flat, land, property, zameen, makaan, lease]}
+    text:
+      en: "A deal about property or a long lease may need a written and registered document. VeriDoc does not replace one. Please ask a lawyer."
+      hi: "जमीन, मकान या लंबे किराए के सौदे के लिए लिखित और रजिस्टर्ड कागज़ ज़रूरी हो सकता है। VeriDoc उसकी जगह नहीं लेता। कृपया वकील से पूछें।"
+  - id: value_hint
+    text:
+      en: "Some agreements may need to be written or stamped to be enforced. A lawyer can tell you if yours does."
+      hi: "कुछ समझौतों को लिखित या स्टांप वाला होना पड़ सकता है। आपका समझौता ऐसा है या नहीं, यह वकील बता सकते हैं।"
+  - id: gst_note
+    when: {term_missing: gst_status}
+    text:
+      en: "GST is not mentioned. Ask your CA if it applies."
+      hi: "GST का ज़िक्र नहीं है। अपने CA से पूछें कि यह लागू होता है या नहीं।"
+handshake_questions: [delivery_date, final_payment, late_penalty, price]
+recap: {template_set: supply_order}
+suggestions: {template_set: supply_order}

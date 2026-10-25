@@ -1,0 +1,26 @@
+{
+  "chat_id": "sample_contradictory",
+  "playbook": "supply_order",
+  "slice": "en",
+  "case": "contradictory",
+  "split": "dev",
+  "synthetic": true,
+  "me": "Patel",
+  "counterparty": "Sai",
+  "terms": {
+    "parties": {"state": "stated", "value": {"kind": "party", "names": ["Patel", "Sai"]}, "sources": [2, 3]},
+    "scope": {"state": "stated", "value": {"kind": "text", "text": "cement"}, "sources": [2]},
+    "quantity": {"state": "stated", "value": {"kind": "quantity", "amount": 100, "unit": "bags"}, "sources": [2, 4]},
+    "price": {"state": "contradicted", "value": null, "sources": [2, 4]},
+    "advance": {"state": "missing", "value": null, "sources": []},
+    "delivery_date": {"state": "stated", "value": {"kind": "date", "date": "2026-11-20"}, "sources": [5]},
+    "final_payment": {"state": "missing", "value": null, "sources": []},
+    "late_penalty": {"state": "missing", "value": null, "sources": []}
+  },
+  "flags": [
+    {"type": "CONTRADICTION", "term_key": "price"},
+    {"type": "MISSING_TERM", "term_key": "advance"},
+    {"type": "MISSING_TERM", "term_key": "final_payment"},
+    {"type": "MISSING_TERM", "term_key": "late_penalty"}
+  ]
+}

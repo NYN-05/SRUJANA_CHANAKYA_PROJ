@@ -1,0 +1,25 @@
+{
+  "chat_id": "sample_ambiguous",
+  "playbook": "supply_order",
+  "slice": "en",
+  "case": "ambiguous",
+  "split": "dev",
+  "synthetic": true,
+  "me": "Raju",
+  "counterparty": "Meena",
+  "terms": {
+    "parties": {"state": "stated", "value": {"kind": "party", "names": ["Raju", "Meena"]}, "sources": [1, 2]},
+    "scope": {"state": "stated", "value": {"kind": "text", "text": "shirts"}, "sources": [1]},
+    "quantity": {"state": "stated", "value": {"kind": "quantity", "amount": 200, "unit": "shirts"}, "sources": [1]},
+    "price": {"state": "stated", "value": {"kind": "money", "paise": "48000", "per": "item"}, "sources": [1]},
+    "advance": {"state": "stated", "value": {"kind": "payment", "paise": "4800000", "when": "paid", "days": null, "date": null}, "sources": [3, 4]},
+    "delivery_date": {"state": "unclear", "value": {"kind": "text", "text": "next week"}, "sources": [2]},
+    "final_payment": {"state": "missing", "value": null, "sources": []},
+    "late_penalty": {"state": "missing", "value": null, "sources": []}
+  },
+  "flags": [
+    {"type": "AMBIGUOUS_DATE", "term_key": "delivery_date"},
+    {"type": "MISSING_TERM", "term_key": "final_payment"},
+    {"type": "MISSING_TERM", "term_key": "late_penalty"}
+  ]
+}

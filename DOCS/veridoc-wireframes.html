@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vachan Wireframes</title>
+<style>
+:root{
+  --bg:#EEF0F4; --surface:#FFFFFF; --line:#C5CBD5; --line-soft:#E2E6EC;
+  --ink:#1B2430; --muted:#5F6B7A; --fill:#E6E9EE; --fill2:#F5F6F9;
+  --accent:#2B59D9; --accent-soft:#E7EDFD;
+  --ok:#1B7448; --ok-bg:#E5F4EC; --warn:#8F5600; --warn-bg:#FFF1D6;
+  --bad:#B02318; --bad-bg:#FCE9E7; --mute-bg:#EDEFF3;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.45;padding:0 16px 64px}
+.page{max-width:1180px;margin:0 auto}
+h1,h2,h3,p{margin:0}
+
+/* ---------- document header ---------- */
+.doc-head{padding:40px 0 20px;display:grid;gap:10px}
+.doc-head h1{font-size:30px;line-height:1.15;letter-spacing:-.01em}
+.doc-head p{color:var(--muted);max-width:75ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:12.5px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+.index{display:flex;flex-wrap:wrap;gap:6px;padding:14px 0 6px}
+.index a{font-size:12.5px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:6px}
+.index a:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- screen sections ---------- */
+.screen{padding-top:44px;display:grid;gap:14px}
+.screen-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.sid{font-family:var(--mono);font-size:12px;font-weight:700;background:var(--ink);color:#fff;border-radius:5px;padding:3px 7px}
+.screen-head h2{font-size:20px;letter-spacing:-.005em}
+.purpose{flex-basis:100%;color:var(--muted);max-width:90ch}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:2px 6px;border:1px solid}
+.tag.mvp{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.tag.p1{color:var(--warn);border-color:#D9A441;background:var(--warn-bg)}
+.tag.road{color:var(--muted);border-color:var(--line);background:var(--mute-bg)}
+
+.frame-wrap{overflow-x:auto;padding-bottom:4px}
+.frame{width:1120px;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(20,30,50,.06)}
+.chrome{height:38px;display:flex;align-items:center;gap:6px;padding:0 14px;background:var(--fill);border-bottom:1px solid var(--line)}
+.dot{width:10px;height:10px;border-radius:50%;background:#B9C0CB;flex:none}
+.url{margin-left:10px;flex:0 1 420px;height:24px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;padding:0 12px;font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appbar{height:54px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid var(--line-soft)}
+.brand{font-weight:800;letter-spacing:.14em;font-size:15px}
+.crumb{color:var(--muted);font-size:13px;white-space:nowrap}
+.crumb b{color:var(--ink)}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tabs span{padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.tabs span.on{background:var(--accent-soft);color:var(--accent)}
+.sp{flex:1}
+.body{padding:22px 24px 26px;display:grid;gap:18px}
+
+/* ---------- primitives ---------- */
+.row{display:flex;align-items:center;gap:10px}
+.row.wrap{flex-wrap:wrap}
+.col{display:grid;gap:12px;align-content:start}
+.card{border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0}
+.card.fill{display:flex;flex-direction:column}
+.card.fill>.card-b{flex:1}
+.card-h{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line-soft);font-weight:700;font-size:13px}
+.card-b{padding:14px;display:grid;gap:12px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.mono{font-family:var(--mono);font-size:12px}
+.h3{font-size:15px;font-weight:700}
+.label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+
+.n{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font:700 11px/1 var(--sans);font-style:normal;flex:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font:600 13px/1 var(--sans);color:var(--ink);white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{border-color:transparent;color:var(--accent);padding:0 6px}
+.btn.sm{height:26px;padding:0 10px;font-size:12px}
+.btn.off{color:#97A0AD;background:var(--fill2);border-style:dashed}
+.input{min-height:34px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;display:flex;align-items:center;color:var(--muted);background:var(--surface);font-size:13px;min-width:0}
+.input.area{min-height:64px;align-items:flex-start}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg span{padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--muted);border-right:1px solid var(--line);background:var(--surface)}
+.seg span:last-child{border-right:0}
+.seg span.on{background:var(--accent-soft);color:var(--accent)}
+.st{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px;border-radius:11px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.st.ok{background:var(--ok-bg);color:var(--ok)}
+.st.warn{background:var(--warn-bg);color:var(--warn)}
+.st.bad{background:var(--bad-bg);color:var(--bad)}
+.st.mute{background:var(--mute-bg);color:var(--muted)}
+.st.info{background:var(--accent-soft);color:var(--accent)}
+.ph{border:1px dashed var(--line);background:var(--fill2);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:10px}
+.bar{height:10px;border-radius:5px;background:var(--fill);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.hr{height:1px;background:var(--line-soft)}
+.banner{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;border:1px solid #E3C77F;background:var(--warn-bg);color:#5C3A00;font-size:12.5px}
+.banner.info{border-color:#B8C8F5;background:var(--accent-soft);color:#1E3A8A}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);background:var(--fill2)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .nw{white-space:nowrap}
+.tbl tr.hl td{background:var(--warn-bg)}
+
+.bubble{max-width:82%;padding:8px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:13px}
+.bubble.me{background:var(--accent-soft);border-color:#B8C8F5;justify-self:end}
+.bubble .meta2{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:2px}
+.bubble mark{background:var(--warn-bg);color:inherit;border-bottom:2px solid #D9A441;padding:0 2px}
+.bubble mark.g{background:var(--ok-bg);border-bottom-color:#5BB387}
+
+/* ---------- notes ---------- */
+.notes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.notes li{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:start;background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--muted)}
+.notes li b{color:var(--ink)}
+.notes .n{margin-top:1px}
+
+/* ---------- overview ---------- */
+.flow{display:grid;grid-template-columns:repeat(11,auto);gap:8px;align-items:center;overflow-x:auto;padding:4px 0}
+.fnode{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;min-width:118px;display:grid;gap:3px}
+.fnode b{font-size:13px}
+.fnode span{font-size:11.5px;color:var(--muted)}
+.fnode.key{border-color:var(--accent);background:var(--accent-soft)}
+.arrow{color:var(--muted);font-weight:700}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.sitemap{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.sitemap a{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}
+.sitemap a:hover{border-color:var(--accent)}
+
+/* ---------- phone ---------- */
+.phone-stage{display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;padding:26px 24px}
+.phone{width:340px;border:2px solid #98A1AE;border-radius:28px;background:var(--surface);overflow:hidden}
+.phone-top{background:var(--fill);padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.avatar{width:30px;height:30px;border-radius:50%;background:#B9C0CB;flex:none}
+.phone-body{padding:14px 12px;display:grid;gap:8px;background:var(--fill2)}
+.phone-body .bubble{max-width:88%}
+.phone-bar{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px}
+
+@media (max-width:640px){
+  .doc-head h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ====================== DOCUMENT HEADER ====================== -->
+<header class="doc-head">
+  <span class="label">Wireframe set · v1.0 · low-fidelity</span>
+  <h1>Vachan: Handshake → Recap → Receipt</h1>
+  <p>Web app wireframes for the LS-06 MVP, plus the first-priority extras. Desktop layouts at 1120 px, 8 px spacing grid, one accent colour, status shown by label as well as colour. Placeholder text uses the sample deal from the idea deck.</p>
+  <div class="meta">
+    <span><b>Screens</b> 12 (11 web, 1 WhatsApp view)</span>
+    <span><b>Platform</b> local web app, runs offline</span>
+    <span><b>Sample deal</b> Raju Traders × Meena Tailors</span>
+    <span><b>Scope tags</b> MVP · P1 · Roadmap</span>
+  </div>
+  <nav class="index" aria-label="Screens">
+    <a href="#s0">S0 Overview</a><a href="#s1">S1 Deals</a><a href="#s2">S2 Import</a><a href="#s3">S3 Workspace</a><a href="#s4">S4 Term detail</a><a href="#s5">S5 Blind Handshake</a><a href="#s6">S6 Recap</a><a href="#s7">S7 Versions</a><a href="#s8">S8 Receipt</a><a href="#s9">S9 Verify</a><a href="#s10">S10 Dispute pack</a><a href="#s11">S11 Settings</a><a href="#s12">S12 WhatsApp view</a>
+  </nav>
+</header>
+
+<!-- ====================== S0 OVERVIEW ====================== -->
+<section class="screen" id="s0">
+  <div class="screen-head"><span class="sid">S0</span><h2>Overview, flow and legend</h2><p class="purpose">How a user moves through the product, and how to read these wireframes.</p></div>
+
+  <div class="card"><div class="card-h">Primary flow</div><div class="card-b">
+    <div class="flow">
+      <div class="fnode"><b>Import</b><span>S2 · chat export</span></div><span class="arrow">→</span>
+      <div class="fnode key"><b>Workspace</b><span>S3 · live terms, gaps</span></div><span class="arrow">→</span>
+      <div class="fnode key"><b>Blind Handshake</b><span>S5 · both sides answer</span></div><span class="arrow">→</span>
+      <div class="fnode"><b>Recap</b><span>S6 · echo-code confirm</span></div><span class="arrow">→</span>
+      <div class="fnode"><b>Receipt</b><span>S8 · chain + hashes</span></div><span class="arrow">→</span>
+      <div class="fnode"><b>Dispute pack</b><span>S10 · export</span></div>
+    </div>
+    <p class="small muted">Side paths: S4 term detail (from S3), S7 versions (from S6 or S8), S9 public verify (opened by anyone with a receipt), S11 settings, S12 what the other party sees in WhatsApp.</p>
+  </div></div>
+
+  <div class="legend">
+    <div class="card"><div class="card-h">Annotation key</div><div class="card-b">
+      <div class="row"><i class="n">1</i><span class="small">Numbered marker. Matches the note under each screen.</span></div>
+      <div class="row wrap"><span class="tag mvp">MVP</span><span class="tag p1">P1</span><span class="tag road">Roadmap</span><span class="small muted">Build priority.</span></div>
+    </div></div>
+    <div class="card"><div class="card-h">Status labels</div><div class="card-b">
+      <div class="row wrap"><span class="st ok">✓ Clear</span><span class="st warn">! Ambiguous</span><span class="st mute">○ Missing</span><span class="st bad">⚠ Conflict</span></div>
+      <span class="small muted">Always a symbol and a word, never colour alone.</span>
+    </div></div>
+    <div class="card"><div class="card-h">Components</div><div class="card-b">
+      <div class="row wrap"><span class="btn primary">Primary</span><span class="btn">Secondary</span><span class="btn off">Not built</span></div>
+      <div class="row"><div class="input" style="flex:1">Input field</div></div>
+      <div class="ph" style="height:40px">Image or document placeholder</div>
+    </div></div>
+  </div>
+
+  <div class="sitemap">
+    <a href="#s1"><span class="sid">S1</span><span>Deals home</span><span class="tag mvp">MVP</span></a>
+    <a href="#s2"><span class="sid">S2</span><span>Import chat</span><span class="tag mvp">MVP</span></a>
+    <a href="#s3"><span class="sid">S3</span><span>Deal workspace</span><span class="tag mvp">MVP</span></a>
+    <a href="#s4"><span class="sid">S4</span><span>Term detail and source</span><span class="tag mvp">MVP</span></a>
+    <a href="#s5"><span class="sid">S5</span><span>Blind Handshake</span><span class="tag mvp">MVP</span></a>
+    <a href="#s6"><span class="sid">S6</span><span>Recap and confirm</span><span class="tag mvp">MVP</span></a>
+    <a href="#s7"><span class="sid">S7</span><span>Versions and changes</span><span class="tag mvp">MVP</span></a>
+    <a href="#s8"><span class="sid">S8</span><span>Receipt</span><span class="tag mvp">MVP</span></a>
+    <a href="#s9"><span class="sid">S9</span><span>Public verify</span><span class="tag mvp">MVP</span></a>
+    <a href="#s10"><span class="sid">S10</span><span>Dispute pack</span><span class="tag mvp">MVP</span></a>
+    <a href="#s11"><span class="sid">S11</span><span>Settings and vault</span><span class="tag mvp">MVP</span></a>
+    <a href="#s12"><span class="sid">S12</span><span>WhatsApp view (other party)</span><span class="tag mvp">MVP</span></a>
+  </div>
+</section>
+
+<!-- ====================== S1 DEALS ====================== -->
+<section class="screen" id="s1">
+  <div class="screen-head"><span class="sid">S1</span><h2>Deals home</h2><span class="tag mvp">MVP</span><p class="purpose">Every deal in one list, with how provable it is and what needs attention next.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><div class="tabs"><span class="on">Deals</span><span>Import</span><span>Settings</span></div><span class="sp"></span><span class="st ok">● Offline mode</span><span class="btn sm">Lock vault</span></div>
+    <div class="body">
+      <div class="row">
+        <div class="col" style="gap:2px"><span class="h3">Deals</span><span class="small muted">4 deals · 1 needs a reply · stored on this device</span></div>
+        <span class="sp"></span>
+        <div class="input" style="width:260px"><i class="n" style="margin-right:8px">2</i>Search deals or people</div>
+        <span class="btn primary"><i class="n" style="background:#fff;color:var(--accent)">1</i>New deal</span>
+      </div>
+      <div class="row wrap"><div class="seg"><span class="on">All</span><span>Needs attention</span><span>Awaiting confirmation</span><span>Confirmed</span></div></div>
+      <div class="card" style="overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th style="width:28%">Deal</th><th style="width:20%"><span class="row" style="gap:6px"><i class="n">3</i>Evidence strength</span></th><th style="width:12%">Open gaps</th><th style="width:16%">Next date</th><th style="width:18%">Status</th><th style="width:6%"></th></tr></thead>
+          <tbody>
+            <tr><td><b>Raju Traders × Meena Tailors</b><div class="small muted">200 shirts · supply order</div></td><td><div class="row"><div class="bar" style="width:90px"><i style="width:68%"></i></div><b>68</b></div></td><td><span class="st warn">2 gaps</span></td><td class="nw">15 Nov · delivery</td><td><span class="st info">Awaiting Meena</span></td><td><span class="btn ghost">Open ›</span></td></tr>
+            <tr><td><b>Kiran Design × Studio Nova</b><div class="small muted">Logo project · supply order</div></td><td><div class="row"><div class="bar" style="width:90px"><i style="width:91%"></i></div><b>91</b></div></td><td><span class="st ok">0 gaps</span></td><td class="nw">02 Nov · payment</td><td><span class="st ok">✓ Confirmed v2</span></td><td><span class="btn ghost">Open ›</span></td></tr>
+            <tr class="hl"><td><b>Patel Hardware × Sai Contractors</b><div class="small muted">Material order · supply order</div></td><td><div class="row"><div class="bar" style="width:90px"><i style="width:42%"></i></div><b>42</b></div></td><td><span class="st bad">⚠ 1 conflict · 4 gaps</span></td><td class="nw">Not set</td><td><span class="st mute">Draft</span></td><td><span class="btn ghost">Open ›</span></td></tr>
+            <tr><td><b>Anita Sharma × Rohit Printers</b><div class="small muted">Banner order · supply order</div></td><td><div class="row"><div class="bar" style="width:90px"><i style="width:77%"></i></div><b>77</b></div></td><td><span class="st warn">1 gap</span></td><td class="nw">20 Nov · delivery</td><td><span class="st info">Awaiting reply</span></td><td><span class="btn ghost">Open ›</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>New deal</b> opens S2. Always visible, one primary action per screen.</div></li>
+    <li><i class="n">2</i><div><b>Search</b> filters by deal name and participant. Local search only.</div></li>
+    <li><i class="n">3</i><div><b>Evidence strength</b> is the 0 to 100 checklist score from S3, shown as a bar and a number.</div></li>
+    <li><i class="n">4</i><div><b>Highlighted row</b> means a conflict needs a decision. Sorted first under "Needs attention".</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S2 IMPORT ====================== -->
+<section class="screen" id="s2">
+  <div class="screen-head"><span class="sid">S2</span><h2>Import chat</h2><span class="tag mvp">MVP</span><p class="purpose">Bring a chat in from a WhatsApp export, pasted text, a sample deal or the built-in simulator.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/import</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><div class="tabs"><span>Deals</span><span class="on">Import</span><span>Settings</span></div><span class="sp"></span><span class="st ok">● Offline mode</span></div>
+    <div class="body">
+      <div class="col" style="gap:2px"><span class="h3">New deal</span><span class="small muted">Step 1 of 2 · choose a source, then check the preview</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+        <div class="col">
+          <div class="card"><div class="card-h"><i class="n">1</i>Source</div><div class="card-b">
+            <div class="seg" style="width:fit-content"><span class="on">WhatsApp export</span><span>Paste text</span><span>Simulator</span></div>
+            <div class="ph" style="height:150px;border-style:dashed;flex-direction:column;gap:6px"><b style="color:var(--ink)">Drop the exported .txt or .zip here</b><span>or choose a file · Android and iPhone formats supported</span><span class="btn sm">Choose file</span></div>
+            <div class="hr"></div>
+            <div class="col" style="gap:8px"><span class="label"><span style="margin-right:6px"></span>Or try a sample deal</span>
+              <div class="row wrap"><span class="btn sm">Clean chat</span><span class="btn sm">Ambiguous chat</span><span class="btn sm">Contradictory chat</span></div></div>
+          </div></div>
+        </div>
+        <div class="col">
+          <div class="card"><div class="card-h"><i class="n">2</i>Preview</div><div class="card-b">
+            <table class="tbl">
+              <tbody>
+                <tr><td class="muted" style="width:38%">File</td><td class="mono">WhatsApp Chat - Raju.txt</td></tr>
+                <tr><td class="muted">Messages</td><td>142 text · 6 media omitted</td></tr>
+                <tr><td class="muted">Participants</td><td>Raju, Meena</td></tr>
+                <tr><td class="muted">Date range</td><td>12 Oct 2026 – 24 Oct 2026</td></tr>
+              </tbody>
+            </table>
+            <div class="col" style="gap:6px"><span class="label">Which one is you?</span><div class="seg" style="width:fit-content"><span class="on">Raju</span><span>Meena</span></div></div>
+            <div class="col" style="gap:6px"><span class="label"><i class="n" style="margin-right:6px;vertical-align:middle">3</i>Deal type</span>
+              <div class="row wrap"><span class="seg"><span class="on">Supply or order</span></span><span class="btn sm off">Freelance job · later</span><span class="btn sm off">Rent · later</span></div></div>
+            <div class="banner info"><i class="n">4</i><span>This chat stays on this device. Nothing is uploaded.</span></div>
+            <div class="row"><span class="sp"></span><span class="btn">Cancel</span><span class="btn primary">Analyse chat</span></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Sources.</b> Export and simulator are the demo paths. Sample chats make the demo independent of any phone.</div></li>
+    <li><i class="n">2</i><div><b>Preview before analysis.</b> Shows what the parser understood, so format problems are caught here, not later.</div></li>
+    <li><i class="n">3</i><div><b>One deal type in the MVP.</b> Others are visible but disabled to signal the roadmap without building it.</div></li>
+    <li><i class="n">4</i><div><b>Privacy line</b> is a permanent fixture of this screen.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S3 WORKSPACE ====================== -->
+<section class="screen" id="s3">
+  <div class="screen-head"><span class="sid">S3</span><h2>Deal workspace</h2><span class="tag mvp">MVP</span><p class="purpose">The main screen. Chat on the left, live analysis on the right, and one suggested message that closes the biggest gap.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › <b>Raju Traders × Meena Tailors</b></span><span class="sp"></span><span class="st ok">● Offline mode</span><span class="btn sm">Recap ›</span></div>
+    <div class="body" style="grid-template-columns:minmax(0,1fr) 440px;align-items:stretch;gap:20px">
+      <!-- chat -->
+      <div class="card fill">
+        <div class="card-h"><i class="n">1</i>Chat · Raju ↔ Meena <span class="sp"></span><span class="small muted">142 messages</span></div>
+        <div class="card-b" style="gap:10px;align-content:start">
+          <div class="bubble"><div class="meta2"><b>Raju</b><span>#1 · 12 Oct 10:02</span></div><mark class="g">200 shirts</mark>, <mark class="g">480 each</mark> ok?</div>
+          <div class="bubble me"><div class="meta2"><b>Meena</b><span>#2 · 12 Oct 10:04</span></div>ok. delivery <mark>next week</mark></div>
+          <div class="bubble"><div class="meta2"><b>Raju</b><span>#3 · 12 Oct 10:05</span></div><mark class="g">advance half now</mark></div>
+          <div class="bubble me"><div class="meta2"><b>Meena</b><span>#4 · 12 Oct 10:21</span></div>done sent 48000</div>
+          <div class="bubble"><div class="meta2"><b>Raju</b><span>#5 · 13 Oct 09:15</span></div>received. will message when ready</div>
+          <div class="row wrap"><span class="st warn">! Ambiguous</span><span class="st ok">✓ Clear</span><span class="small muted">Highlights show where each term came from</span></div>
+        </div>
+        <div class="row" style="padding:10px 14px;border-top:1px solid var(--line-soft)"><div class="input" style="flex:1">Type a message…</div><span class="btn primary">Send</span></div>
+      </div>
+      <!-- analysis -->
+      <div class="col">
+        <div class="card"><div class="card-b" style="gap:8px">
+          <div class="row"><span class="label" style="display:flex;align-items:center;gap:6px"><i class="n">2</i>Evidence strength</span><span class="sp"></span><b style="font-size:20px">68</b><span class="muted">/ 100</span></div>
+          <div class="bar"><i style="width:68%"></i></div>
+          <div class="row wrap small muted"><span>Present 5 of 8</span><span>·</span><span>Clear 3 of 8</span><span>·</span><span>Acknowledged by both 2 of 8</span></div>
+        </div></div>
+        <div class="card"><div class="card-h"><i class="n">3</i>Terms found</div>
+          <table class="tbl">
+            <tbody>
+              <tr><td>Parties</td><td>Raju, Meena</td><td><span class="st ok">✓ Clear</span></td><td class="mono nw">#1</td></tr>
+              <tr><td>Quantity</td><td>200 shirts</td><td><span class="st ok">✓ Clear</span></td><td class="mono nw">#1</td></tr>
+              <tr><td>Price</td><td>₹480 each</td><td><span class="st ok">✓ Clear</span></td><td class="mono nw">#1</td></tr>
+              <tr><td>Advance</td><td>₹48,000</td><td><span class="st ok">✓ Clear</span></td><td class="mono nw">#4</td></tr>
+              <tr class="hl"><td>Delivery</td><td>“next week”</td><td><span class="st warn">! Ambiguous</span></td><td class="mono nw">#2</td></tr>
+              <tr><td>Final payment</td><td class="muted">Not mentioned</td><td><span class="st mute">○ Missing</span></td><td class="mono nw">–</td></tr>
+              <tr><td>Late penalty</td><td class="muted">Not mentioned</td><td><span class="st mute">○ Missing</span></td><td class="mono nw">–</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card"><div class="card-h"><i class="n">4</i>Suggested next message</div><div class="card-b">
+          <div class="row"><div class="seg"><span>Casual</span><span class="on">Polite</span><span>Firm</span></div></div>
+          <div class="input area" style="color:var(--ink)">Just to confirm, delivery by 15 Nov and the balance ₹48,000 on delivery, right?</div>
+          <div class="row"><span class="small muted">Closes: Delivery, Final payment</span><span class="sp"></span><span class="btn">Edit</span><span class="btn primary">Use this</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Chat with highlights.</b> Message numbers are the anchors for every source link. Highlight colour is paired with a label.</div></li>
+    <li><i class="n">2</i><div><b>Evidence strength.</b> A transparent weighted checklist. The three counts under the bar explain the score.</div></li>
+    <li><i class="n">3</i><div><b>Terms found.</b> Fixed schema. Selecting a row opens S4. Missing rows are listed, not hidden.</div></li>
+    <li><i class="n">4</i><div><b>Suggested next message.</b> Three tones, editable. Using it copies the text to send in WhatsApp. The user always sends it.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S4 TERM DETAIL ====================== -->
+<section class="screen" id="s4">
+  <div class="screen-head"><span class="sid">S4</span><h2>Term detail and source</h2><span class="tag mvp">MVP</span><p class="purpose">Opened from a row in S3. Shows exactly which message a term came from and lets the user confirm or correct it.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena/terms/delivery</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › Raju Traders × Meena Tailors › <b>Delivery</b></span><span class="sp"></span><span class="btn sm">‹ Back to workspace</span></div>
+    <div class="body" style="grid-template-columns:minmax(0,1fr) 440px;align-items:stretch;gap:20px">
+      <div class="card fill">
+        <div class="card-h"><i class="n">1</i>Source message</div>
+        <div class="card-b">
+          <div class="bubble me" style="justify-self:start"><div class="meta2"><b>Meena</b><span>#2 · 12 Oct 10:04</span></div>ok. delivery <mark>next week</mark></div>
+          <div class="hr"></div>
+          <span class="label">Context</span>
+          <div class="bubble" style="max-width:100%"><div class="meta2"><b>Raju</b><span>#1</span></div>200 shirts, 480 each ok?</div>
+          <div class="bubble me" style="max-width:100%;justify-self:start"><div class="meta2"><b>Meena</b><span>#2</span></div>ok. delivery next week</div>
+          <div class="bubble" style="max-width:100%"><div class="meta2"><b>Raju</b><span>#3</span></div>advance half now</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card"><div class="card-h"><i class="n">2</i>Delivery date <span class="sp"></span><span class="st warn">! Ambiguous</span></div><div class="card-b">
+          <div class="col" style="gap:4px"><span class="label">Extracted value</span><div class="input" style="color:var(--ink)">“next week”</div></div>
+          <div class="col" style="gap:4px"><span class="label">Why flagged</span><span class="small muted">A relative date with no fixed day. “Next week” could be 5 to 12 days away depending on the reader.</span></div>
+          <div class="col" style="gap:6px"><span class="label"><i class="n" style="margin-right:6px;vertical-align:middle">3</i>Set the exact date</span><div class="input">DD / MM / YYYY</div></div>
+          <div class="row"><span class="btn ghost">Reject term</span><span class="sp"></span><span class="btn primary">Confirm value</span></div>
+        </div></div>
+        <div class="banner info"><i class="n">4</i><span>Every extracted term needs a person to confirm it. Nothing is added to the record automatically.</span></div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Source viewer.</b> The original message plus its neighbours, so the context is visible.</div></li>
+    <li><i class="n">2</i><div><b>Reason for the flag</b> in plain language, not just a status.</div></li>
+    <li><i class="n">3</i><div><b>Manual correction.</b> The user can overwrite the AI value. The change is logged.</div></li>
+    <li><i class="n">4</i><div><b>Human confirmation rule.</b> The AI suggests, the person decides.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S5 BLIND HANDSHAKE ====================== -->
+<section class="screen" id="s5">
+  <div class="screen-head"><span class="sid">S5</span><h2>Blind Handshake</h2><span class="tag mvp">MVP · lite</span><p class="purpose">Each side answers the same key questions privately. Answers are sealed, then revealed side by side so misunderstandings show up before work starts.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena/handshake</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › Raju Traders × Meena Tailors › <b>Blind Handshake</b></span><span class="sp"></span><span class="st ok">● Offline mode</span></div>
+    <div class="body">
+      <div class="row wrap" style="gap:8px"><i class="n">1</i>
+        <span class="st mute">1 Ask</span><span class="arrow">›</span><span class="st mute">2 Sealed</span><span class="arrow">›</span><span class="st info">3 Reveal</span>
+      </div>
+      <div style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start">
+        <div class="card"><div class="card-h"><i class="n">2</i>Sealed answers</div><div class="card-b">
+          <div class="col" style="gap:4px"><b>Raju</b><span class="small muted">Sealed 24 Oct, 11:02</span><span class="mono">9f3a…c71e</span></div>
+          <div class="hr"></div>
+          <div class="col" style="gap:4px"><b>Meena</b><span class="small muted">Sealed 24 Oct, 11:09</span><span class="mono">4b2d…e08a</span></div>
+          <div class="banner info"><span>Neither side could see the other’s answers before sealing.</span></div>
+        </div></div>
+        <div class="card"><div class="card-h"><i class="n">3</i>Reveal <span class="sp"></span><span class="st warn">2 mismatches</span></div>
+          <table class="tbl">
+            <thead><tr><th>Question</th><th>Raju answered</th><th>Meena answered</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>Quantity</td><td>200 shirts</td><td>200 shirts</td><td><span class="st ok">✓ Match</span></td></tr>
+              <tr><td>Price each</td><td>₹480</td><td>₹480</td><td><span class="st ok">✓ Match</span></td></tr>
+              <tr><td>Advance paid</td><td>₹48,000</td><td>₹48,000</td><td><span class="st ok">✓ Match</span></td></tr>
+              <tr class="hl"><td>Delivery date</td><td>15 Nov</td><td>22 Nov</td><td><span class="st bad">⚠ 7 days apart</span></td></tr>
+              <tr class="hl"><td>Final payment</td><td>On delivery</td><td>30 days after delivery</td><td><span class="st bad">⚠ Different terms</span></td></tr>
+            </tbody>
+          </table>
+          <div class="row" style="padding:12px 14px;border-top:1px solid var(--line-soft)"><span class="small muted">Next: agree the two differences, then confirm the recap.</span><span class="sp"></span><span class="btn"><i class="n" style="margin-right:2px">4</i>Draft message for both</span><span class="btn primary">Resolve mismatches</span></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Three-step progress.</b> Ask, Sealed, Reveal. The current state is highlighted.</div></li>
+    <li><i class="n">2</i><div><b>Seal records.</b> Each answer set is hashed and timestamped before anyone sees the other’s.</div></li>
+    <li><i class="n">3</i><div><b>Side-by-side reveal.</b> Matches are quiet. Mismatches are highlighted and say how far apart they are.</div></li>
+    <li><i class="n">4</i><div><b>Fix path.</b> The app drafts a friendly message that proposes one agreed value for each mismatch.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S6 RECAP ====================== -->
+<section class="screen" id="s6">
+  <div class="screen-head"><span class="sid">S6</span><h2>Recap and confirmation</h2><span class="tag mvp">MVP</span><p class="purpose">A short plain-language agreement, generated from confirmed terms. The other party confirms by replying with a code in WhatsApp.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena/recap</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › Raju Traders × Meena Tailors › <b>Recap</b></span><span class="sp"></span><span class="btn sm">Versions</span></div>
+    <div class="body" style="grid-template-columns:minmax(0,1fr) 420px;align-items:start;gap:20px">
+      <div class="card">
+        <div class="card-h"><i class="n">1</i>Recap <span class="sp"></span><div class="seg"><span class="on">English</span><span>हिन्दी</span><span>ಕನ್ನಡ <small>P1</small></span></div></div>
+        <div class="card-b" style="gap:14px">
+          <p>Hi Meena, just confirming what we discussed:</p>
+          <table class="tbl" style="border:1px solid var(--line-soft);border-radius:6px;overflow:hidden">
+            <tbody>
+              <tr><td>200 shirts at ₹480 each = ₹96,000</td><td class="mono nw">source #1</td></tr>
+              <tr><td>₹48,000 advance received</td><td class="mono nw">source #4</td></tr>
+              <tr><td>Delivery by 15 Nov</td><td class="mono nw">source #12</td></tr>
+              <tr><td>Balance ₹48,000 on delivery</td><td class="mono nw">source #12</td></tr>
+            </tbody>
+          </table>
+          <div class="banner"><span>Drafting aid, not legal advice. Please read each line before confirming.</span></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card"><div class="card-h"><i class="n">2</i>Confirmations</div><div class="card-b">
+          <div class="row"><b>Raju (you)</b><span class="sp"></span><span class="st ok">✓ Confirmed 11:42</span></div>
+          <div class="row"><b>Meena</b><span class="sp"></span><span class="st warn">Waiting</span></div>
+        </div></div>
+        <div class="card"><div class="card-h"><i class="n">3</i>Echo code</div><div class="card-b">
+          <div class="ph" style="height:64px;font:700 28px/1 var(--mono);letter-spacing:.3em;color:var(--ink)">7F3K</div>
+          <span class="small muted">Meena replies “CONFIRM 7F3K” in WhatsApp. The code comes from the recap’s fingerprint, so it only matches this exact text.</span>
+          <span class="btn primary">Copy WhatsApp message</span>
+        </div></div>
+        <div class="card"><div class="card-h"><i class="n">4</i>Paste her reply</div><div class="card-b">
+          <div class="input area">Paste Meena’s reply here…</div>
+          <div class="row"><span class="sp"></span><span class="btn">Check reply</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Recap lines</b> are generated from fixed templates in each language, and every line links to its source message.</div></li>
+    <li><i class="n">2</i><div><b>Confirmation status</b> per person. Both must confirm for the version to be marked confirmed.</div></li>
+    <li><i class="n">3</i><div><b>Echo code</b> removes the need for the other person to install anything or click a link.</div></li>
+    <li><i class="n">4</i><div><b>Reply check.</b> The app verifies the code matches the recap and logs her reply message as proof.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S7 VERSIONS ====================== -->
+<section class="screen" id="s7">
+  <div class="screen-head"><span class="sid">S7</span><h2>Versions and changes</h2><span class="tag mvp">MVP · lite</span><p class="purpose">A changed term becomes a clear difference between versions that both sides confirm, not a new contract.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena/versions</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › Raju Traders × Meena Tailors › <b>Versions</b></span><span class="sp"></span><span class="btn sm">‹ Back to recap</span></div>
+    <div class="body" style="grid-template-columns:300px minmax(0,1fr);align-items:start;gap:20px">
+      <div class="card"><div class="card-h"><i class="n">1</i>History</div><div class="card-b">
+        <div class="card" style="border-color:var(--accent);background:var(--accent-soft)"><div class="card-b" style="gap:4px"><div class="row"><b>Version 2</b><span class="sp"></span><span class="st info">Current</span></div><span class="small muted">24 Oct · changed delivery date</span><span class="small">Raju ✓ · Meena waiting</span></div></div>
+        <div class="card"><div class="card-b" style="gap:4px"><div class="row"><b>Version 1</b><span class="sp"></span><span class="st ok">✓ Confirmed</span></div><span class="small muted">18 Oct · first recap</span><span class="small">Raju ✓ · Meena ✓</span></div></div>
+      </div></div>
+      <div class="card"><div class="card-h"><i class="n">2</i>Version 1 → Version 2</div>
+        <table class="tbl">
+          <thead><tr><th>Term</th><th>Version 1</th><th>Version 2</th><th>Change</th></tr></thead>
+          <tbody>
+            <tr><td>Quantity</td><td>200 shirts</td><td>200 shirts</td><td class="muted">No change</td></tr>
+            <tr><td>Price</td><td>₹480 each</td><td>₹480 each</td><td class="muted">No change</td></tr>
+            <tr class="hl"><td>Delivery</td><td>8 Nov</td><td><b>15 Nov</b></td><td><span class="st warn">Changed</span></td></tr>
+            <tr><td>Balance</td><td>₹48,000 on delivery</td><td>₹48,000 on delivery</td><td class="muted">No change</td></tr>
+          </tbody>
+        </table>
+        <div class="card-b" style="border-top:1px solid var(--line-soft)">
+          <div class="row"><span class="small muted"><i class="n" style="margin-right:6px;vertical-align:middle">3</i>Reason, from chat #31: “Cloth delayed at the supplier”</span><span class="sp"></span><span class="btn">Share change with Meena</span><span class="btn primary">Confirm version 2</span></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Version history.</b> Older versions are never edited, only superseded.</div></li>
+    <li><i class="n">2</i><div><b>Diff table.</b> Only changed rows are emphasised. Unchanged rows stay visible for context.</div></li>
+    <li><i class="n">3</i><div><b>Linked reason.</b> The message that caused the change is attached to the new version.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S8 RECEIPT ====================== -->
+<section class="screen" id="s8">
+  <div class="screen-head"><span class="sid">S8</span><h2>Receipt</h2><span class="tag mvp">MVP</span><p class="purpose">The tamper-evident record: the chain of fingerprints, the commitment, the timestamp and the export.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena/receipt</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › Raju Traders × Meena Tailors › <b>Receipt</b></span><span class="sp"></span><span class="btn sm">Open verify page</span></div>
+    <div class="body">
+      <div class="card"><div class="card-h"><i class="n">1</i>Chain of records</div><div class="card-b">
+        <div class="flow" style="grid-template-columns:repeat(7,auto)">
+          <div class="fnode"><b>Chat import</b><span class="mono">9f3a…c71e</span><span>12 Oct 10:02</span></div><span class="arrow">→</span>
+          <div class="fnode"><b>Agreement v1</b><span class="mono">2c18…77ab</span><span>18 Oct 17:30</span></div><span class="arrow">→</span>
+          <div class="fnode"><b>Agreement v2</b><span class="mono">e51d…0b94</span><span>24 Oct 11:42</span></div><span class="arrow">→</span>
+          <div class="fnode key"><b>Confirmed</b><span class="mono">a7c4…3d12</span><span>Pending Meena</span></div>
+        </div>
+      </div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+        <div class="card"><div class="card-h"><i class="n">2</i>Commitment</div>
+          <table class="tbl"><tbody>
+            <tr><td class="muted" style="width:36%">Root hash</td><td class="mono">9f3a8d…c71e04</td></tr>
+            <tr><td class="muted">Method</td><td>SHA-256 · Merkle tree · salted</td></tr>
+            <tr><td class="muted">Messages covered</td><td>142</td></tr>
+            <tr><td class="muted">Recorded at</td><td>24 Oct 2026, 11:42 (device clock)</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="card-h"><i class="n">3</i>Independent timestamp <span class="sp"></span><span class="tag p1">P1</span></div><div class="card-b">
+          <div class="row"><span class="st mute">○ Not anchored</span><span class="sp"></span><span class="small muted">Device clock only</span></div>
+          <span class="small muted">When online, the root hash can be anchored on a public network so the time no longer depends on this device’s clock.</span>
+          <div class="row"><span class="sp"></span><span class="btn">Anchor now</span></div>
+        </div></div>
+      </div>
+      <div class="row wrap"><span class="btn"><i class="n" style="margin-right:2px">4</i>Export receipt bundle</span><span class="btn">Create dispute pack</span><span class="sp"></span><span class="small muted">This proves the record was not changed after it was saved. It does not prove the original chat was genuine.</span></div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Chain view.</b> Each box includes its hash, so changing any earlier box breaks every later one.</div></li>
+    <li><i class="n">2</i><div><b>Commitment.</b> Shows what is covered, and which clock produced the time.</div></li>
+    <li><i class="n">3</i><div><b>Anchoring is optional.</b> Off by default. The status is always shown honestly.</div></li>
+    <li><i class="n">4</i><div><b>Limit stated on screen.</b> Tamper evidence is not proof of authenticity.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S9 VERIFY ====================== -->
+<section class="screen" id="s9">
+  <div class="screen-head"><span class="sid">S9</span><h2>Public verify page</h2><span class="tag mvp">MVP</span><p class="purpose">A static page anyone can open without an account or internet. Two outcomes are shown side by side: unchanged, and altered.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">verify.html · works offline</div></div>
+    <div class="appbar"><span class="brand">VACHAN VERIFY</span><span class="sp"></span><span class="small muted">No login · no network · nothing is uploaded</span></div>
+    <div class="body">
+      <div class="ph" style="height:78px;flex-direction:column;gap:4px"><b style="color:var(--ink)"><i class="n" style="margin-right:8px;vertical-align:middle">1</i>Drop a receipt bundle here to check it</b><span>.zip exported from the Receipt screen</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+        <div class="card" style="border-color:#7DC4A0"><div class="card-h"><i class="n">2</i>Result A <span class="sp"></span><span class="st ok">✓ UNCHANGED since recording</span></div><div class="card-b">
+          <div class="row"><span class="st ok">✓</span><span>Chain intact · 4 of 4 links</span></div>
+          <div class="row"><span class="st ok">✓</span><span>Merkle root matches the receipt</span></div>
+          <div class="row"><span class="st ok">✓</span><span>Timestamps in a consistent order</span></div>
+          <div class="row"><span class="st mute">○</span><span>Independent timestamp: not anchored</span></div>
+        </div></div>
+        <div class="card" style="border-color:#E39A93"><div class="card-h"><i class="n">3</i>Result B <span class="sp"></span><span class="st bad">⚠ ALTERED after recording</span></div><div class="card-b">
+          <div class="row"><span class="st bad">✕</span><span>Message #7 differs from the recorded version</span></div>
+          <div class="row"><span class="st bad">✕</span><span>Merkle root does not match</span></div>
+          <div class="row"><span class="st bad">✕</span><span>Chain breaks at link 2 of 4</span></div>
+          <span class="small muted">Shown after changing one character in the exported chat.</span>
+        </div></div>
+      </div>
+      <div class="banner"><i class="n">4</i><span>This checks that the record was not changed after it was saved. It cannot prove that the original chat export was genuine.</span></div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Drop zone.</b> Verification runs entirely in the browser. No data leaves the device.</div></li>
+    <li><i class="n">2</i><div><b>Pass state</b> lists each check with its own result, not one opaque tick.</div></li>
+    <li><i class="n">3</i><div><b>Fail state</b> names the first message or link that does not match. This is the demo’s tamper test.</div></li>
+    <li><i class="n">4</i><div><b>Honest limit</b> is always visible on this page.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S10 DISPUTE PACK ====================== -->
+<section class="screen" id="s10">
+  <div class="screen-head"><span class="sid">S10</span><h2>Dispute pack</h2><span class="tag mvp">MVP · basic</span><p class="purpose">One export for a lawyer, a CA or the MSME Facilitation Council: timeline, evidence index, verification guide and a draft certificate.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/deals/raju-meena/pack</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><span class="crumb">Deals › Raju Traders × Meena Tailors › <b>Dispute pack</b></span><span class="sp"></span><span class="btn sm">‹ Back to receipt</span></div>
+    <div class="body">
+      <div class="banner"><i class="n">1</i><span>Drafting aid, not legal advice. The certificate is an unsigned draft and must be completed by the person responsible for the device.</span></div>
+      <div style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start">
+        <div class="card"><div class="card-h"><i class="n">2</i>Pack contents</div><div class="card-b">
+          <div class="row"><span class="st ok">☑</span><span>Deal timeline</span></div>
+          <div class="row"><span class="st ok">☑</span><span>Evidence index with hashes</span></div>
+          <div class="row"><span class="st ok">☑</span><span>Agreed terms, all versions</span></div>
+          <div class="row"><span class="st ok">☑</span><span>Draft certificate (electronic record)</span></div>
+          <div class="row"><span class="st ok">☑</span><span>How to verify, step by step</span></div>
+          <div class="row"><span class="st mute">☐</span><span>Share only deal messages <span class="tag p1">P1</span></span></div>
+        </div></div>
+        <div class="card"><div class="card-h"><i class="n">3</i>Privacy mask preview <span class="tag p1">P1</span> <span class="sp"></span><div class="seg"><span>Off</span><span class="on">On</span></div></div>
+          <div class="card-b" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="col" style="gap:6px"><span class="label">Original</span><div class="bubble" style="max-width:100%">send to a/c <span class="mono">123456789012</span>, IFSC <span class="mono">SBIN0001234</span></div></div>
+            <div class="col" style="gap:6px"><span class="label">Shared copy</span><div class="bubble me" style="max-width:100%;justify-self:stretch">send to a/c <span class="mono">[ACCOUNT_1]</span>, IFSC <span class="mono">[BANK_CODE_1]</span></div></div>
+            <span class="small muted" style="grid-column:1/-1">Masked parts still verify against the original receipt. Money amounts and dates are never masked.</span>
+          </div>
+        </div>
+      </div>
+      <div class="row"><span class="small muted">Estimated size 1.2 MB · 14 pages</span><span class="sp"></span><span class="btn"><i class="n" style="margin-right:2px">4</i>Preview PDF</span><span class="btn primary">Export pack</span></div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Disclaimer first.</b> Shown before any export action.</div></li>
+    <li><i class="n">2</i><div><b>Pack contents.</b> Each part can be switched off. Selective disclosure is P1.</div></li>
+    <li><i class="n">3</i><div><b>Privacy mask preview.</b> Shows exactly what will be hidden before the file is created.</div></li>
+    <li><i class="n">4</i><div><b>Preview before export.</b> The user sees the final document first.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S11 SETTINGS ====================== -->
+<section class="screen" id="s11">
+  <div class="screen-head"><span class="sid">S11</span><h2>Settings and vault</h2><span class="tag mvp">MVP · lite</span><p class="purpose">Unlocking the vault, recovery, language, the AI model status and timestamping.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">localhost:8080/settings</div></div>
+    <div class="appbar"><span class="brand">VACHAN</span><div class="tabs"><span>Deals</span><span>Import</span><span class="on">Settings</span></div><span class="sp"></span><span class="st ok">● Offline mode</span></div>
+    <div class="body" style="grid-template-columns:220px minmax(0,1fr);align-items:start;gap:20px">
+      <div class="col" style="gap:4px">
+        <span class="btn" style="justify-content:flex-start;background:var(--accent-soft);border-color:var(--accent);color:var(--accent)">Vault and recovery</span>
+        <span class="btn" style="justify-content:flex-start;border-color:transparent">Language</span>
+        <span class="btn" style="justify-content:flex-start;border-color:transparent">AI and models</span>
+        <span class="btn" style="justify-content:flex-start;border-color:transparent">Timestamping</span>
+        <span class="btn" style="justify-content:flex-start;border-color:transparent">About and limits</span>
+      </div>
+      <div class="col">
+        <div class="card"><div class="card-h"><i class="n">1</i>Vault and recovery</div><div class="card-b">
+          <div class="row"><div class="col" style="gap:2px"><b>Passphrase</b><span class="small muted">Encrypts deals on this device. If lost, data cannot be opened without the recovery key.</span></div><span class="sp"></span><span class="btn">Change</span></div>
+          <div class="hr"></div>
+          <div class="row"><div class="col" style="gap:2px"><b>Recovery key</b><span class="small muted">Print it and keep it somewhere safe. Shown once at setup.</span></div><span class="sp"></span><span class="btn">Print key</span></div>
+        </div></div>
+        <div class="card"><div class="card-h"><i class="n">2</i>AI and models</div>
+          <table class="tbl"><tbody>
+            <tr><td style="width:34%">Extraction model</td><td>Qwen2.5 3B · local</td><td><span class="st ok">✓ Hash verified</span></td></tr>
+            <tr><td>Speech to text</td><td class="muted">Not enabled</td><td><span class="st mute">Roadmap</span></td></tr>
+            <tr><td>Cloud AI</td><td>Off</td><td><span class="st mute">○ Disabled</span></td></tr>
+            <tr><td>Safe mode</td><td>Rules only, no model</td><td><div class="seg"><span>On</span><span class="on">Off</span></div></td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="card-h"><i class="n">3</i>Timestamping</div><div class="card-b">
+          <div class="row"><div class="col" style="gap:2px"><b>Anchor receipts when online</b><span class="small muted">Sends only a hash, never chat content.</span></div><span class="sp"></span><div class="seg"><span>On</span><span class="on">Off</span></div></div>
+        </div></div>
+      </div>
+    </div>
+  </div></div>
+  <ol class="notes">
+    <li><i class="n">1</i><div><b>Recovery key</b> is required because a lost passphrase means lost data. This is stated plainly.</div></li>
+    <li><i class="n">2</i><div><b>Model status.</b> The model file’s hash is checked at startup. Safe mode falls back to rules only if anything looks wrong.</div></li>
+    <li><i class="n">3</i><div><b>Anchoring toggle.</b> Off by default, and described in terms of what is sent.</div></li>
+  </ol>
+</section>
+
+<!-- ====================== S12 WHATSAPP ====================== -->
+<section class="screen" id="s12">
+  <div class="screen-head"><span class="sid">S12</span><h2>What the other party sees (WhatsApp)</h2><span class="tag mvp">MVP</span><p class="purpose">Meena installs nothing. She receives a normal message and confirms by replying with the code.</p></div>
+  <div class="frame-wrap"><div class="frame">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">Preview of the other party’s phone</div></div>
+    <div class="phone-stage">
+      <div class="phone">
+        <div class="phone-top"><span class="avatar"></span><div class="col" style="gap:0"><b>Raju Traders</b><span class="small muted">online</span></div><span class="sp"></span><i class="n">3</i></div>
+        <div class="phone-body">
+          <div class="bubble" style="max-width:92%"><div class="meta2"><i class="n">1</i><b>Raju</b><span>11:42</span></div>Hi Meena, just confirming what we discussed:<br>• 200 shirts at ₹480 = ₹96,000<br>• ₹48,000 advance received<br>• Delivery by 15 Nov<br>• Balance ₹48,000 on delivery<br><br>If all correct, reply: <b>CONFIRM 7F3K</b> <i class="n">4</i></div>
+          <div class="bubble me"><div class="meta2"><i class="n">2</i><b>Meena</b><span>11:58</span></div>CONFIRM 7F3K</div>
+        </div>
+        <div class="phone-bar"><div class="input" style="flex:1">Message</div><span class="btn sm">Send</span></div>
+      </div>
+      <div class="col">
+        <ol class="notes" style="grid-template-columns:1fr">
+          <li><i class="n">1</i><div><b>Plain message.</b> Reads like a friendly check, not a contract. The wording is generated from the confirmed terms.</div></li>
+          <li><i class="n">2</i><div><b>One-line confirmation.</b> Her reply sits in the chat itself, so the confirmation is part of the evidence.</div></li>
+          <li><i class="n">3</i><div><b>No app, link or account</b> for the other party. This removes the biggest adoption barrier.</div></li>
+          <li><i class="n">4</i><div><b>Code is tied to the text.</b> If any line of the recap changes, the code changes, so an old code cannot confirm new terms.</div></li>
+        </ol>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<p class="small muted" style="padding-top:40px">Wireframes are low-fidelity and show structure, content and behaviour only. Visual design, motion and final copy are out of scope for this set.</p>
+</div>
+</body>
+</html>

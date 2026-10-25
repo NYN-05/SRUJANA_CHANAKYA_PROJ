@@ -1,0 +1,21 @@
+{
+  "chat_id": "sample_clean",
+  "playbook": "supply_order",
+  "slice": "en",
+  "case": "clean",
+  "split": "dev",
+  "synthetic": true,
+  "me": "Rohit",
+  "counterparty": "Anita",
+  "terms": {
+    "parties": {"state": "stated", "value": {"kind": "party", "names": ["Rohit", "Anita"]}, "sources": [1, 2]},
+    "scope": {"state": "stated", "value": {"kind": "text", "text": "banners"}, "sources": [1]},
+    "quantity": {"state": "stated", "value": {"kind": "quantity", "amount": 500, "unit": "banners"}, "sources": [1]},
+    "price": {"state": "stated", "value": {"kind": "money", "paise": "12000", "per": "item"}, "sources": [1]},
+    "advance": {"state": "stated", "value": {"kind": "payment", "paise": "2000000", "when": "paid", "days": null, "date": null}, "sources": [3, 5]},
+    "delivery_date": {"state": "stated", "value": {"kind": "date", "date": "2026-11-05"}, "sources": [2, 3]},
+    "final_payment": {"state": "stated", "value": {"kind": "payment", "paise": "4000000", "when": "on_delivery", "days": null, "date": null}, "sources": [3]},
+    "late_penalty": {"state": "stated", "value": {"kind": "text", "text": "500 per day deduction"}, "sources": [4]}
+  },
+  "flags": []
+}

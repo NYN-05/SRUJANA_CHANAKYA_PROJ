@@ -1,0 +1,130 @@
+# Freelance or service: design, writing, tutoring, photography, repairs, contracting
+# (TECHNICAL.md › Playbooks section 3). Hindi text is a draft (Q-17); legal hints need lawyer review (Q-02 to Q-07).
+key: freelance
+version: 1
+title: {en: Freelance or service, hi: फ्रीलांस या सेवा}
+ack_window: 5
+terms:
+  - key: parties
+    label: {en: Parties, hi: पक्ष}
+    required: true
+    weight: 10
+    type: party
+    ask_order: 8
+    parsers: []
+    ambiguity: []
+    pairs_with: []
+    cues: {en: []}
+    model_aliases: [client, freelancer]
+  - key: deliverable
+    label: {en: What will be delivered, hi: क्या दिया जाएगा}
+    required: true
+    weight: 20
+    type: text
+    ask_order: 1
+    parsers: []
+    ambiguity: [vague_scope]
+    pairs_with: [deadline]
+    cues: {en: [logo, design, website, article, video, photos, photography, shoot, repair, writing, translation, deliverable]}
+    model_aliases: [scope]
+  - key: price
+    label: {en: Fee, hi: फीस}
+    required: true
+    weight: 15
+    type: money
+    ask_order: 3
+    parsers: [amounts]
+    ambiguity: [approx_amount]
+    pairs_with: [payment_schedule]
+    cues: {en: [fee, price, rate, charge, cost, total], hi: [daam, keemat]}
+    model_aliases: [fee]
+  - key: payment_schedule
+    label: {en: "When payments are due (advance, milestones, final)", hi: "भुगतान कब देना है (एडवांस, किस्तें, आखिरी)"}
+    required: true
+    weight: 15
+    type: text
+    ask_order: 2
+    parsers: []
+    ambiguity: [vague_pay]
+    pairs_with: [price]
+    cues: {en: [advance, upfront, milestone, milestones, instalment, instalments, installment, installments, balance, rest, final payment, on completion]}
+    model_aliases: [payment_date]
+  - key: deadline
+    label: {en: Deadline, hi: आखिरी तारीख}
+    required: true
+    weight: 15
+    type: date
+    ask_order: 4
+    parsers: [dates]
+    ambiguity: [rel_date]
+    pairs_with: [deliverable]
+    cues: {en: [deadline, due, ready, deliver, delivery, complete, finish, submit], hi: [डिलीवरी]}
+    model_aliases: [delivery_date]
+  - key: revisions
+    label: {en: Number of revisions or changes included, hi: कितने बदलाव शामिल हैं}
+    required: true
+    weight: 10
+    type: quantity
+    ask_order: 5
+    parsers: [quantities]
+    ambiguity: [unlimited_rev]
+    pairs_with: []
+    cues: {en: [revision, revisions, changes, rounds, edits]}
+    model_aliases: [revision_count]
+  - key: ownership
+    label: {en: Who owns or may use the finished work, hi: तैयार काम का मालिक कौन है या कौन इस्तेमाल कर सकता है}
+    required: true
+    weight: 5
+    type: enum
+    ask_order: 7
+    parsers: []
+    ambiguity: []
+    pairs_with: []
+    cues: {en: [ownership, copyright, rights, licence, license]}
+    model_aliases: [ownership_transfer]
+  - key: cancellation
+    label: {en: What happens if the work is cancelled or stopped, hi: काम रद्द या बंद होने पर क्या होगा}
+    required: true
+    weight: 10
+    type: text
+    ask_order: 6
+    parsers: []
+    ambiguity: []
+    pairs_with: []
+    cues: {en: [cancel, cancelled, cancellation, refund, terminate, stop]}
+    model_aliases: [cancellation_terms]
+ambiguity_rules:
+  - id: rel_date
+    type: AMBIGUOUS_DATE
+    patterns: [by next week, asap, jaldi, end of month]
+    reason: {en: "No fixed deadline day.", hi: "आखिरी तारीख पक्की नहीं है।"}
+  - id: vague_scope
+    type: VAGUE_QUANTITY
+    patterns: [a logo, some changes, basic website]
+    reason: {en: "The deliverable is not specific enough to check later.", hi: "क्या दिया जाएगा यह इतना साफ़ नहीं कि बाद में जाँचा जा सके।"}
+  - id: unlimited_rev
+    type: VAGUE_QUANTITY
+    patterns: [until you are happy, any changes, unlimited]
+    reason: {en: "Unlimited changes are not a number.", hi: "असीमित बदलाव कोई संख्या नहीं है।"}
+  - id: approx_amount
+    type: AMBIGUOUS_AMOUNT
+    patterns: [around, approx, about, lagbhag]
+    reason: {en: "The fee is approximate or a range.", hi: "फीस अनुमानित है या रेंज में है।"}
+  - id: vague_pay
+    type: VAGUE_PAYMENT
+    patterns: [after the work, when the client pays, later]
+    reason: {en: "No payment date.", hi: "भुगतान की तारीख नहीं है।"}
+legal_hints:
+  - id: ip_hint
+    when: {keywords: [copyright, rights, licence, license], term_missing: ownership}
+    text:
+      en: "Who owns the finished work may need to be in writing. Please ask a lawyer."
+      hi: "तैयार काम का मालिक कौन है, यह लिखित में होना ज़रूरी हो सकता है। कृपया वकील से पूछें।"
+  - id: property_hint
+    when: {keywords: [plot, flat, land, property, zameen, construction]}
+    text:
+      en: "Work on property may need a written and registered document. Please ask a lawyer."
+      hi: "जमीन या मकान पर काम के लिए लिखित और रजिस्टर्ड कागज़ ज़रूरी हो सकता है। कृपया वकील से पूछें।"
+handshake_questions: [deadline, payment_schedule, revisions, price]
+recap: {template_set: freelance}
+suggestions: {template_set: freelance}
