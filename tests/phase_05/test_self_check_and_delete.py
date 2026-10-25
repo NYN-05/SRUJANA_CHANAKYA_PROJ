@@ -54,3 +54,41 @@ def test_delete_one_deal_keeps_others(vault):
     d2, _ = commit_sample(vault, "clean.txt", "Anita", "Rohit")
     vault.delete_deal(d1)
     assert [m.text for m in vault.messages(d2)][0].startswith("Hi, need 500 banners")
+
+
+def test_delete_deal_survives_a_reopen(tmp_path, fast_kdf):
+    from packages.vault import Vault
+
+    v, _ = Vault.create(tmp_path / "v", "pw", kdf=fast_kdf)
+    d1, _ = commit_sample(v, "ambiguous.txt", "Raju", "Meena")
+    d2, _ = commit_sample(v, "clean.txt", "Anita", "Rohit")
+    v.delete_deal(d1)
+    v.lock()
+    again = Vault.unlock(tmp_path / "v", passphrase="pw")
+    assert [d.id for d in again.deals()] == [d2]
+    assert all(r.ok for r in again.self_check())
+    assert [e.action for e in again.audit_events(None)][-1] == "delete_deal"
+    again.lock()
+
+
+def test_delete_unknown_deal(vault):
+    with pytest.raises(KeyError):
+        vault.delete_deal("no-such-deal")
+
+
+def test_shared_evidence_survives_deleting_one_deal(vault):
+    d1, _ = commit_sample(vault, "ambiguous.txt", "Raju", "Meena", media={"a.opus": AUDIO})
+    commit_sample(vault, "clean.txt", "Anita", "Rohit", media={"b.opus": AUDIO})
+    path = vault.evidence_path(hashlib.sha256(AUDIO).hexdigest())
+    vault.delete_deal(d1)
+    assert path.exists() and all(r.ok for r in vault.self_check())
+
+
+def test_strict_self_check_raises_with_all_results(vault):
+    from packages.vault import SelfCheckFailed
+
+    commit_sample(vault, "ambiguous.txt", "Raju", "Meena", media={"a.opus": AUDIO})
+    vault.evidence_path(hashlib.sha256(AUDIO).hexdigest()).unlink()
+    with pytest.raises(SelfCheckFailed) as err:
+        vault.self_check(raise_on_failure=True)
+    assert {r.name for r in err.value.results} >= {"integrity_check", "evidence"}

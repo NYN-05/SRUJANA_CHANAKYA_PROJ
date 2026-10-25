@@ -161,3 +161,189 @@ Implemented PHASES.md Phase 3 (tasks 1 to 10). Not executed or verified. One YAM
 - `tests/phase_03/test_quantities.py`: zero and decimals; playbook units; dozen without a unit; spans.
 - `tests/phase_03/test_percent_payment_penalty.py`: decimal percentage; net days beat after-delivery; on completion and Hindi delivery; "fine" is not a penalty.
 - `tests/phase_03/test_extract_edge_cases.py`: foreign currency review; zero quantity; year rollover; explicit reference date; eligible ids; context senders and system lines; merging and conflicting balance statements; penalty conflict versus elaboration; parties; playbook order and valid source spans; Devanagari digits; playbook pattern rules for vague text; the freelance date rule fallback; injection patterns.
+
+---
+
+## 2026-10-25 18:19 +05:30 — Phase 4: Flags, Evidence Strength score and suggestions
+
+Implemented PHASES.md Phase 4 (tasks 1 to 8). Not executed or verified.
+
+### Added
+- `packages/contracts/formatting.py`: `format_inr(paise)` (Indian grouping, paise shown only when not zero, rejects negatives, floats and non-ASCII digits) and `format_date(date_or_iso, lang)` for `en` and `hi` (I-17).
+- `packages/intelligence/templates.py`: the templates folder, a cached YAML loader and `TemplateMissing(key, tone, lang)`.
+- `packages/intelligence/score.py`: `ScoreInput`, `compute_score(inputs, playbook)` (0.4 present + 0.3 clear + 0.3 acknowledged, exact `Decimal`, rounded half up, one row per required term, the three counts), the shared `factor` and `ScoreDelta(before, after)` with `.delta` (FR-SCO-003 triggers themselves are Phase 9).
+- `packages/intelligence/ack.py`: `acknowledged_keys(terms, messages, *, me_id, counterparty_id, window=5)`: an agreement word (negations such as "not ok" do not count) or a payment of the same amount from the other party within the next `window` messages; party terms are acknowledged once both people have written.
+- `packages/intelligence/flags.py`: `build_flags(terms, playbook, messages, *, me_id, counterparty_id, names=None)`.
+  - **Unclear terms:** AMBIGUOUS_DATE, AMBIGUOUS_AMOUNT, VAGUE_QUANTITY and VAGUE_PAYMENT, with the playbook rule's own reason; an unclear term whose reason has no playbook rule becomes NEEDS_REVIEW.
+  - **Other flags:**
+    - MISSING_TERM for required terms only;
+    - CONTRADICTION naming every value with its message number;
+    - NEEDS_REVIEW;
+    - UNACKNOWLEDGED, naming who mentioned it;
+    - REGISTRATION_HINT from legal-hint keywords or a missing named term, citing the matching message.
+  - Every flag has English and Hindi reasons, and only MISSING_TERM and hints may have no source.
+- `packages/intelligence/suggest.py`: `rank_gaps` (conflict first, then weight x (1 - factor) descending, then ask order; I-05), `choose_targets` (top gap plus one `pairs_with` partner that is also a gap), `load_templates` and `build_suggestion`.
+  - **Unknown slots:** an unknown fact renders as a bracketed label (`[delivery date]`, `[balance]`) and is listed in `needs_user_input` by term key.
+  - **Balance:** computed as total minus advance.
+  - **Fallback:** a missing pair template falls back to the top target's own template.
+  - **Nothing sends:** the result is plain data.
+- `playbooks/templates/{en,hi}/flags.yaml`, `supply_order.suggest.yaml` and `freelance.suggest.yaml`: casual, polite and firm text for every required term and every pair, in English and Hindi. The Hindi text is a draft (Q-17). The firm tone has no threatening words, and there is no literal rupee sign before a money slot (I-18).
+
+### Modified
+- `packages/contracts/__init__.py`: `Suggestion.needs_user_input` is now a list of term keys (it was a boolean).
+- `packages/intelligence/extract.py`: a vague promise to pay ("will pay soon") that has no cue word now becomes an unclear `vague_pay` candidate of the last payment term, so VAGUE_PAYMENT can be raised for it.
+- Tests in `tests/phase_04/`:
+  - `test_formatting.py`: bool and float rejected; all 24 month names;
+  - `test_flags.py`: Hindi and display names; keyword hint cites its message; unknown unclear reason;
+  - `test_score.py`: delta, row order, duplicate inputs;
+  - `test_suggestion_text.py`: pair fallback, `TemplateMissing`, bracketed balance in both languages, no Latin words in Hindi, the same facts in all tones;
+  - `test_acknowledgement.py`: system lines and third senders do not acknowledge.
+
+---
+
+## 2026-10-25 18:46 +05:30 — Phase 5: Vault, human confirmation and versions
+
+Implemented PHASES.md Phase 5 (tasks 1 to 12). Not executed or verified. Needs `sqlalchemy`, `alembic`, `cryptography` and `argon2-cffi` (listed for Phase 0, which is not built yet). Phases 6 and 7, which were also requested, have not been started.
+
+### Added
+- `packages/vault/crypto.py`: `KdfParams`, `DEFAULT_KDF` (placeholder cost, Q-23), Argon2id key derivation, AES-GCM `seal`/`open_`, and the recovery key (160 random bits, 32 base32 characters in groups of four; case, spaces and dashes are ignored).
+- `packages/vault/errors.py`: `WrongPassphrase`, `VaultLocked`, `TermNotConfirmable(key, reason)`, `NothingToVersion`, `SelfCheckFailed(results)`.
+- `packages/vault/faults.py`: `inject(point)`, `check(point)`, `InjectedFault`; inactive unless a test enters `inject`.
+- `packages/vault/migrate.py`, `alembic.ini`, `migrations/env.py` and `migrations/versions/0001_initial.py`: `upgrade(url)` and the CLI command `alembic -c packages/vault/alembic.ini -x url=sqlite:///<path> upgrade head`.
+  - **Schema:** every MVP entity table.
+  - **Triggers:** `<table>_no_update` and `<table>_no_delete` on the ten insert-only tables, written as raw SQL in the migration.
+  - **Phase 6 and 7:** the `recaps`, `confirmations` and `receipts` tables exist but are unused until then.
+- `packages/vault/vault.py` and `__init__.py`: the `Vault` class.
+  - **Keys:** a random vault data key is wrapped by the passphrase and, separately, by the recovery key, each with its own Argon2id salt. The KDF cost is read from the header (`vault.json`). `create`, `unlock`, `lock`, `change_passphrase`, `kdf_params`.
+  - **Encryption:** each deal has its own random key, wrapped by the vault key. Sender names, text, file names, term values, versions and audit details are AES-GCM blobs; only ids, sequence numbers, hashes and states are readable columns. Database is SQLite in WAL mode.
+  - **Import:** `commit_import(draft, *, export_bytes, file_name, media, playbook_version=1)` runs in one transaction.
+    - It stores the import record, message leaves (`0x10`) in order, encrypted evidence files by digest (stored once), audio as a `not_transcribed` voice note plus a `0x11` leaf, other media as `0x14` leaves, and an `import` audit event.
+    - A message that names a media file gets its `attachment_hash`.
+    - A second import into the same deal continues `seq` and gets its own batch id.
+    - On any failure the transaction rolls back and new evidence files are removed.
+  - **Terms:** `save_proposals`, `proposals`, `agreed_terms`, `confirm_term`, `correct_term` (origin `user`), `reject_term`, `acknowledge`. Only a stated proposal can be confirmed as it is; unclear, contradicted and missing terms need an explicit value. Each action writes an audit row with the old and new values and no message text.
+  - **Versions:** `create_version` (refused with nothing confirmed; one `0x15` leaf per confirmed term; terms sorted by key; digest, Merkle root and chain link from `packages.integrity`), `versions`, `diff_versions` (`no_change`, `changed`, `added`, `removed`), `record_score`, `audit_events`, `deals`, `participants`, `messages`, `import_record`, `voice_notes`, `leaves`, `evidence_path`.
+  - **Checks and deletion:** `self_check()` runs the integrity check, the trigger list, an insert-only probe on a temporary table, and a decrypt-and-hash of every evidence file. `delete_deal` removes the deal key, evidence files nobody else uses and the deal's rows where allowed, with one content-free audit event.
+  - **Logging:** event names and counts only; the SQLAlchemy engine logger is held at WARNING.
+
+### Decisions to note
+- **Evidence encryption:** evidence files are encrypted with the vault data key, with the digest as associated data, not the deal id. The same file in two deals is therefore stored once and survives deleting one of them; the deal key shreds everything else.
+- **Playbook version:** the vault cannot import the intelligence package, so the playbook version in a terms set is a `commit_import` argument (default 1).
+- **Audit and shredding:** the content-free `delete_deal` event is encrypted with the vault key so it stays readable; a deleted deal's other audit events are encrypted with its deal key and drop out of `audit_events`.
+
+### Tests (`tests/phase_05/`, added to the existing files)
+- `test_vault_crypto.py`: locked vault refuses everything, locking twice, an unlock needs a secret, the recovery-key format.
+- `test_import_commit.py`: a second import into the same deal, attachment hash links, stored participants.
+- `test_human_confirmation.py`: origin kept when an explicit value equals the proposal; dict values validated; acknowledge needs an agreed term; unknown key; a chosen conflict candidate keeps its sources; audit per deal.
+- `test_versions.py`: a correction after a version changes only the next one, hashed fields only, per-deal numbering, an unknown version in a diff.
+- `test_self_check_and_delete.py`: delete survives a reopen, unknown deal, shared evidence survives, strict self-check raises with all results.
+
+---
+
+## 2026-10-25 18:59 +05:30 — Phase 6: Recap and echo-code confirmation
+
+Implemented PHASES.md Phase 6 (tasks 1 to 7, 5a). Not executed or verified.
+
+### Added
+- `packages/ingest/recap.py`: `build_recap(terms, playbook, language, other_name, *, deal_id, version_n) -> RecapDraft` and `build_whatsapp_message(recap)`.
+  - **Lines:** driven by the recap template file. A line needs all its terms. Amounts use `format_inr`, dates `format_date` (I-07), bullets are `• `. The variant of a line (advance received or due, balance on or after delivery or on a date, price per item or total) comes from the term's value; a balance with no amount reads "Balance due on delivery".
+  - **Omissions:** a line with a missing or unusable term is left out, with its terms in `omitted_terms` as `not_confirmed` or `incomplete_line`. Unconfirmed required terms are listed; optional terms (GST) are not.
+  - **Languages:** English and Hindi; any other language is a `ValueError`. The draft carries the closing line with a `{code}` slot and computes no hash.
+- `packages/contracts/templates.py`: the shared template loader (`TEMPLATES_DIR`, `load_yaml`). `packages/intelligence/templates.py` now wraps it, so ingest, intelligence and the vault read templates the same way.
+- `playbooks/templates/{en,hi}/{supply_order,freelance}.recap.yaml` and `replies.yaml`: recap lines, greeting and closing (`CONFIRM` and the code stay Latin in Hindi), and the four failure messages plus the success message. Hindi is a draft (Q-17).
+- In `packages/vault/vault.py`:
+  - `create_recap(deal_id, version_n, draft) -> Recap`: `recap_hash` over `deal_id`, `version_n`, `language`, `lines` and `body_text` only (D1), the echo code from it, and `text` = body plus the closing line with the code. The version must exist (`VersionNotConfirmable`). Writes a `sent` confirmation row and a `send_recap` audit event.
+  - `approve_recap(recap_id)`: the user's own approval, as a confirmation row for party `me` (audit `approve_recap`).
+  - `check_reply(recap_id, pasted_text, sender=None) -> ConfirmationResult`:
+    - **Parsing:** headers (Android or iPhone) are parsed with a small pattern in the vault, because the vault may not import the ingest package. A paste without a header needs `sender` (else `ValueError`) and is marked `sender_entered_by_user`.
+    - **Message choice and failure order:** the last message from the counterparty containing `CONFIRM` is used. Failures are checked in this order: `no_code`, `wrong_sender`, `stale_code`, `code_mismatch`. Only the deal's most recent recap can be confirmed (I-20); an older recap, or an older recap's code, gives `stale_code`. The code is read with the Phase 1 `extract_code` (look-alike mapping on the code only, I-08).
+    - **Stored result:** every attempt is stored as a confirmation row. Only a success writes a `0x22` leaf (with the fields of INTEGRITY_SPEC 4.2) and marks every term of the recap's version `acknowledged_by_other` (5a). Audit `check_reply`.
+    - **Result shape:** a failure is a result with `message_en` and `message_hi`, never an exception.
+  - `confirmations(recap_id)`, `version_confirmed(deal_id, n)` (true only when one recap of version `n` has both the user's approval and a verified reply).
+- `RecapNotFound` and `VersionNotConfirmable` (both `KeyError`) in `packages/vault/errors.py`.
+
+### Modified
+- `packages/contracts/__init__.py`: `RecapDraft.closing` and the `ConfirmationResult` model.
+- `packages/vault/migrations/versions/0001_initial.py`: the `confirmations` table has a clear `party` column (the migration is not released yet, so it was edited in place).
+- `packages/vault/vault.py`: `_add_leaf` returns the new leaf id; `acknowledge` shares a helper with the reply check.
+- Tests in `tests/phase_06/`:
+  - `test_recap_builder.py`: total-price line, balance without an amount, unusable value, unconfirmed required terms, optional terms never listed, closing line, per-line dates;
+  - `test_reply_check.py`: unknown recap, iPhone header, look-alike letters, Hindi messages, sender case and spaces, acknowledgement on success only;
+  - `test_version_confirmation.py`: the sent then confirmed states, a confirmation never counts for another recap.
+
+### Decisions to note
+- `reply_ts` in a confirmation leaf is the time the reply was checked, because a pasted header carries no UTC offset.
+- The vault duplicates a short header pattern instead of using the Phase 2 parser, to keep the documented dependency rule.
+
+---
+
+## 2026-10-25 19:05 +05:30 — Phase 7: Receipt, bundle, verifiers and tamper tests
+
+Implemented PHASES.md Phase 7 (tasks 1 to 6; task 7, publishing the page hash, is a release step). Not executed or verified. **Generated files are not committed yet:** run `python scripts/build_verify_page.py` once to write `apps/verify/verify.html`, and `python scripts/make_tamper_fixtures.py` once to write `test-vectors/integrity/tamper/` (the static-page, JavaScript and fixture tests need them).
+
+### Added
+- `packages/integrity/verify.py`: `verify_bundle(path_or_bytes) -> VerifyResult`, `BundleFormatError`, `UnsupportedSpecVersion`, and `python -m packages.integrity.verify <bundle.zip>`.
+  - **Checks:** `spec_version` (the version is supported and the receipt hash matches its body), `leaves`, `merkle_root`, `chain`, `version_roots`, `import_record`, `timestamps`, `anchor`.
+  - **Leaves:** each leaf is recomputed from what the bundle discloses (payload, or media file, with the salt); a leaf with nothing disclosed is taken as given. The Merkle root is rebuilt from the recomputed hashes (I-21). A gap or a misplaced row names the first row that does not fit.
+  - **Chain:** digests and links are recomputed and compared with both `chain.json` and the receipt body; a version in the body but missing from `chain.json` (or the reverse) fails. Each version root is checked against the leaf prefix it names.
+  - **First difference:** the first differing item is chosen in this order: lowest leaf, lowest chain version, lowest version-root version, import record, root only, receipt.
+  - **Timestamps and anchor:** an inconsistent time order is a warning, never ALTERED by itself. An anchor is reported but not checked offline. Unknown extra members are warnings.
+  - **Errors:** an unreadable file raises `BundleFormatError("This file is not a VeriDoc receipt bundle.")`. An unknown spec version raises `UnsupportedSpecVersion` and is not called ALTERED.
+- `apps/verify/verify.mjs`: the same verifier in JavaScript, `async verifyBundle(zipBytes)`, with a small zip reader (stored and deflate entries through `DecompressionStream`). No network.
+- `apps/verify/verify.template.html` and `scripts/build_verify_page.py`:
+  - The build script inlines `integrity.mjs` and `verify.mjs` into the one-file page `apps/verify/verify.html` (I-22), and `--check` fails when the page is stale.
+  - The script prints the page's SHA-256 for the release notes.
+  - The page has a drop zone, one line per check with a symbol and a word, `✓ UNCHANGED since recording` or `⚠ ALTERED after recording`, the first differing item, and the limit text always visible.
+  - Results are written as text nodes, never as HTML, and the page has no network API.
+- `scripts/make_tamper_fixtures.py`: writes `unchanged.zip`, the eight tamper zips (seven cases plus the import record) and `expected.json` to `test-vectors/integrity/tamper/`, with fixed zip timestamps; `--check` compares. Bundles come from `tests/phase_07/bundle_builder.py`.
+- In the vault: `build_receipt(deal_id) -> Receipt(body, receipt_hash)` and `export_bundle(deal_id, out_dir, include_media=False) -> Path`.
+  - **Receipt:** the body has the INTEGRITY_SPEC section 9 fields plus `import_record_hash`; it is stored in `receipts` with a `receipt` audit event.
+  - **Bundle:** every leaf disclosed, in the Appendix D format. It is written atomically as an unencrypted zip whose README states the limit text and that the file is not encrypted. `export` is audited.
+
+### Modified
+- `packages/contracts/__init__.py`: the first-difference kind `receipt`.
+- `packages/vault/vault.py` and the initial migration: a version stores `leaf_count`, the number of leaves its root covers; `VersionRecord` has the field.
+- Tests in `tests/phase_07/`:
+  - `test_python_verifier.py`: receipt hash edit, a version root that does not match, a chain entry that disagrees with the receipt, an extra version, a missing import record, a malformed leaf row, a misplaced row, the command line;
+  - `test_receipt.py`: the leaf count a version covers, an empty chain;
+  - `test_bundle.py`: `chain.json` and the import record, the media member, a replaced exported audio file, the README;
+  - `test_verify_page_static.py`: text nodes only, a drop zone, the verifier and primitives are inlined.
+
+---
+
+## 2026-10-25 19:11 +05:30 — Phase 8: Local open-source model with deterministic validation
+
+Implemented PHASES.md Phase 8 (tasks 1 to 9). Not executed or verified. No model file is bundled and none was downloaded; the real-model smoke test (marker `model`) needs `VERIDOC_MODEL_PATH`, a manifest entry and the optional `llama-cpp-python` extra. The model and its licence are still open questions (Q-13, Q-46). There is no fine-tuning (R-03).
+
+### Added (`packages/intelligence/model/`)
+- `port.py` (`ModelRunner.generate(system, data_block, schema, timeout_s)`), `fake.py` (`FakeModelRunner(response, delay_s=0.0, error=None)` recording `calls`), `llama_cpp.py` (`LlamaCppRunner(model_path)`: CPU, temperature 0, JSON-schema grammar; the library is imported only when the runner is built).
+- `prompt.py`: `SYSTEM_INSTRUCTION`, `build_prompt(messages, playbook, fence_token=None, eligible_ids=None) -> Prompt(system, data_block, fence_token, schema)`.
+  - **System text:** fixed code plus the playbook's term keys; never any chat text.
+  - **Data block:** a JSON array of `{seq, sender, text}` between two copies of a random per-call fence token. A token that appears in any message is replaced. System lines are never sent.
+  - **Schema:** `additionalProperties: false`, keys limited to the playbook, states `stated`, `unclear` and `contradicted`.
+- `output.py`: `parse_model_output(raw, playbook, messages) -> (list[ModelTerm], list[OutputProblem])`.
+  - **No exceptions:** invalid JSON is a counted problem, never an exception.
+  - **Keys and fields:** model keys map to playbook keys through the aliases (I-02); an unknown key is dropped; extra fields are ignored; a bad state or bad source positions make the term `needs_review`; confidence is clamped to 0 to 1.
+  - **Values:** normalised by the playbook term's type. Money (`₹60,000`, `50k`, `1.5 lakh`) goes to paise. A term with the `payment` parser takes an amount or a timing word. Dates take `YYYY-MM-DD`, or `MM-DD` which becomes `--MM-DD`. Counts must be whole numbers. A value that cannot be read leaves the term `needs_review` with no value.
+- `grounding.py`: `ground_terms(model_terms, messages, rule_terms, *, me_id, counterparty_id, eligible_ids=None) -> (accepted, failures)`.
+  - **Failure reasons, checked in this order:** `unknown_source`, `ineligible_source`, `injection_source` (every usable source matches the shared injection patterns), `quote_not_found` (compared after normalisation), `value_not_derivable`.
+  - **Value check:** the value must be readable from the quote by the rules parsers, or equal a rules value that cites the same message. Party names must be the two chosen parties.
+  - **Failures are returned so they can be counted.**
+- `refine.py`: `refine_terms(...) -> RefineResult(terms, grounding_failures, dropped, used_model, error)`.
+  - **Failure handling:** the model runs in a helper thread so the call returns within `timeout_s` even if the model keeps going. A timeout, an exception or invalid output leaves the rules result with `error` set to `timeout`, `runner_error` or `invalid_output`. Log lines carry codes only. `runner=None` returns the rules result.
+  - **Comparison (FR-AIS-004):**
+    - Agreement gives origin `both`.
+    - A disagreement gives `needs_review`, no selected value, and both values as candidates.
+    - A grounded term where the rules found nothing usable gives origin `ai` with `needs_review`.
+    - A conflict in the rules is never overridden.
+    - Only the first grounded model term per key counts, and a model that says "unclear" proposes nothing.
+- `models.py`: `verify_model_file(path, entry)` (size, then streamed SHA-256; a missing file is `False`), `select_tier(ram_gb, has_avx2, thresholds)` (no AVX2 caps at `low`), `ModelStatus`, `analysis_mode(safe_mode_switch, status)` with reasons `switch`, `model_missing`, `hash_mismatch`, `load_failed`, `low_hardware`. The switch is an argument, so each call sees the current value.
+- `eval/runner/metrics.py`: `ai_contribution(gold, rules_only, rules_and_ai)` for the trust report: the scores of the rules alone, of rules plus model, and the difference.
+
+### Modified (tests in `tests/phase_08/`)
+- `test_output_parsing.py`: money forms, timing words, payment amounts, whole-number counts, party and text values, entries that are not objects, bad dates.
+- `test_grounding.py`: dates, quantities, party names, one clean source among injected ones, an unreadable value, `eligible_ids`.
+- `test_refine_compare.py`: an unsure model, a rules conflict is kept, first term per key, the dropped count, an AI proposal for a vague rules term, `ai_contribution`.
+- `test_models_and_safe_mode.py`: size mismatch, an entry without a hash, an unchecked model, the switch read on every call.
+- `test_prompt.py`: playbook keys in the system text, the fence token, system lines never sent, the schema.
+- `test_refine_failures.py`: an answer in time is used, the invalid-output count, the prompt the runner received.

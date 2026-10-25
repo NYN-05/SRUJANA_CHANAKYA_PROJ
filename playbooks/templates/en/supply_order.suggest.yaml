@@ -1,0 +1,50 @@
+# Suggestion templates, keyed by the sorted target keys joined with "+", then by tone.
+# Slots in {braces} are filled from confirmed values; unknown ones show as [label]. Firm tone is courteous.
+delivery_date+final_payment:
+  casual: "Quick one: delivery by {delivery_date} and the balance {balance} on delivery, right?"
+  polite: "Just to confirm, delivery by {delivery_date} and the balance {balance} on delivery, right?"
+  firm: "To keep things clear, please confirm: delivery by {delivery_date}, balance {balance} due on delivery."
+delivery_date+late_penalty:
+  casual: "Quick one: delivery by {delivery_date}, and if it is late, {late_penalty}. Okay?"
+  polite: "Just to confirm, delivery by {delivery_date}, and if it is late, {late_penalty}, right?"
+  firm: "To keep things clear, please confirm: delivery by {delivery_date}; if it is late, {late_penalty}."
+advance+final_payment:
+  casual: "Quick one: advance {advance} and the balance {balance} on delivery, right?"
+  polite: "Just to confirm, the advance is {advance} and the balance {balance} is due on delivery, right?"
+  firm: "To keep things clear, please confirm: advance {advance}, balance {balance} due on delivery."
+quantity+scope:
+  casual: "Quick one: {quantity} in total, right?"
+  polite: "Just to confirm, we are supplying {quantity}, right?"
+  firm: "To keep things clear, please confirm what is being supplied: {quantity}."
+delivery_date:
+  casual: "Quick one: delivery by {delivery_date}, right?"
+  polite: "Just to confirm, delivery will be by {delivery_date}, right?"
+  firm: "To keep things clear, please confirm the delivery date: {delivery_date}."
+final_payment:
+  casual: "Quick one: the balance {balance} is due on delivery, right?"
+  polite: "Just to confirm, the balance {balance} is due on delivery, right?"
+  firm: "To keep things clear, please confirm the balance {balance} and when it is due."
+late_penalty:
+  casual: "Quick one: if delivery is late, is {late_penalty} fine?"
+  polite: "Just to confirm, if delivery is late, we agree on {late_penalty}, right?"
+  firm: "To keep things clear, please confirm what happens if delivery is late: {late_penalty}."
+price:
+  casual: "Quick one: the price is {price}, right?"
+  polite: "Just to confirm, the price is {price}, right?"
+  firm: "To keep things clear, please confirm the price: {price}."
+advance:
+  casual: "Quick one: the advance is {advance}, right?"
+  polite: "Just to confirm, the advance is {advance}, right?"
+  firm: "To keep things clear, please confirm the advance: {advance}."
+quantity:
+  casual: "Quick one: the quantity is {quantity}, right?"
+  polite: "Just to confirm, the quantity is {quantity}, right?"
+  firm: "To keep things clear, please confirm the quantity: {quantity}."
+scope:
+  casual: "Quick one: we are supplying {scope}, right?"
+  polite: "Just to confirm, we are supplying {scope}, right?"
+  firm: "To keep things clear, please confirm what is being supplied: {scope}."
+parties:
+  casual: "Quick one: this deal is between {parties}, right?"
+  polite: "Just to confirm, this deal is between {parties}, right?"
+  firm: "To keep things clear, please confirm who this deal is between: {parties}."

@@ -1,0 +1,47 @@
+# Recap lines (TECHNICAL.md > Playbooks section 2). A line needs every term in `terms`; `variant_from` names the
+# term whose value picks the template. Slots: each term key, plus {total}, {days}, {date}. Unknown slots omit the line.
+greeting: "Hi {other_name}, just confirming what we discussed:"
+closing: "If all correct, reply: CONFIRM {code}"
+bullet: "• "
+lines:
+  - key: price
+    terms: [scope, quantity, price]
+    variant_from: price
+    templates:
+      item: "{quantity} {scope} at {price} each = {total}"
+      plain: "{quantity} {scope} at {price} each = {total}"
+      total: "{quantity} {scope} for {total}"
+  - key: advance
+    terms: [advance]
+    variant_from: advance
+    templates:
+      paid: "{advance} advance received"
+      on_date: "{advance} advance due on {date}"
+      plain: "{advance} advance"
+  - key: delivery_date
+    terms: [delivery_date]
+    templates:
+      plain: "Delivery by {delivery_date}"
+  - key: final_payment
+    terms: [final_payment]
+    variant_from: final_payment
+    templates:
+      on_delivery: "Balance {final_payment} on delivery"
+      after_delivery_days: "Balance {final_payment} within {days} days of delivery"
+      after_delivery: "Balance {final_payment} after delivery"
+      on_date: "Balance {final_payment} on {date}"
+      on_completion: "Balance {final_payment} on completion"
+      plain: "Balance {final_payment}"
+      noamt_on_delivery: "Balance due on delivery"
+      noamt_after_delivery_days: "Balance due within {days} days of delivery"
+      noamt_after_delivery: "Balance due after delivery"
+      noamt_on_date: "Balance due on {date}"
+      noamt_on_completion: "Balance due on completion"
+  - key: late_penalty
+    terms: [late_penalty]
+    templates:
+      plain: "If delivery is late: {late_penalty}"
+  - key: gst_status
+    terms: [gst_status]
+    templates:
+      plain: "GST: {gst_status}"

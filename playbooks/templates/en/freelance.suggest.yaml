@@ -1,0 +1,41 @@
+# Suggestion templates for the freelance playbook (keyed by sorted target keys joined with "+", then tone).
+deadline+deliverable:
+  casual: "Quick one: you get {deliverable} by {deadline}, okay?"
+  polite: "To confirm, you will receive {deliverable} by {deadline}. Does that work for you?"
+  firm: "To keep things clear, please confirm: {deliverable} will be delivered by {deadline}."
+payment_schedule+price:
+  casual: "Quick one: the fee is {price}, paid like this: {payment_schedule}. Okay?"
+  polite: "To confirm, the fee is {price}, and payments are: {payment_schedule}. Does that work for you?"
+  firm: "To keep things clear, please confirm: fee {price}; payments: {payment_schedule}."
+deadline:
+  casual: "Quick one: the deadline is {deadline}, right?"
+  polite: "To confirm, the deadline is {deadline}. Does that work for you?"
+  firm: "To keep things clear, please confirm the deadline: {deadline}."
+deliverable:
+  casual: "Quick one: you get {deliverable}, right?"
+  polite: "To confirm, you will receive {deliverable}. Is that right?"
+  firm: "To keep things clear, please confirm what will be delivered: {deliverable}."
+price:
+  casual: "Quick one: the fee is {price}, right?"
+  polite: "To confirm, the fee is {price}. Does that work for you?"
+  firm: "To keep things clear, please confirm the fee: {price}."
+payment_schedule:
+  casual: "Quick one: payments go like this: {payment_schedule}, right?"
+  polite: "To confirm, payments are: {payment_schedule}. Does that work for you?"
+  firm: "To keep things clear, please confirm when payments are due: {payment_schedule}."
+revisions:
+  casual: "Quick one: {revisions} are included, right?"
+  polite: "To confirm, {revisions} are included in the fee. Is that right?"
+  firm: "To keep things clear, please confirm how many changes are included: {revisions}."
+ownership:
+  casual: "Quick one: who owns the finished work? I think {ownership}."
+  polite: "To confirm, the finished work belongs to or may be used by: {ownership}. Is that right?"
+  firm: "To keep things clear, please confirm who owns the finished work: {ownership}."
+cancellation:
+  casual: "Quick one: if the work is cancelled, {cancellation}. Okay?"
+  polite: "To confirm, if the work is cancelled or stopped, {cancellation}. Does that work for you?"
+  firm: "To keep things clear, please confirm what happens if the work is cancelled: {cancellation}."
+parties:
+  casual: "Quick one: this work is between {parties}, right?"
+  polite: "To confirm, this work is between {parties}. Is that right?"
+  firm: "To keep things clear, please confirm who this work is between: {parties}."

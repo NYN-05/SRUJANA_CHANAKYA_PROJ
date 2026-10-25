@@ -59,5 +59,27 @@ def test_analysis_mode(switch, status, expected):
     assert analysis_mode(switch, status) == expected
 
 
+def test_size_mismatch_fails_before_hashing(tmp_path):
+    data = b"GGUF" + bytes(500)
+    p = tmp_path / "m.gguf"
+    p.write_bytes(data)
+    assert verify_model_file(p, dict(entry_for(p, data), size_bytes=len(data) + 1)) is False
+
+
+def test_entry_without_a_hash_never_matches(tmp_path):
+    p = tmp_path / "m.gguf"
+    p.write_bytes(b"x")
+    assert verify_model_file(p, {"file": "m.gguf"}) is False
+
+
+def test_an_unchecked_model_is_not_a_mismatch():
+    assert analysis_mode(False, ModelStatus(present=True, hash_ok=None, load_failures=0, tier="low")) == ("rules_and_ai", None)
+
+
+def test_the_switch_is_read_on_every_call():
+    status = ModelStatus(present=True, hash_ok=True, load_failures=0, tier="default")
+    assert [analysis_mode(s, status)[0] for s in (False, True, False)] == ["rules_and_ai", "rules_only", "rules_and_ai"]
+
+
 def test_switch_wins_over_every_other_reason():
     assert analysis_mode(True, ModelStatus(present=False, hash_ok=False, load_failures=5, tier="safe"))[1] == "switch"

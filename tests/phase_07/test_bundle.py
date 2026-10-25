@@ -58,6 +58,36 @@ def test_one_character_change_in_exported_message_is_named(vault, deal, tmp_path
     assert (r.first_difference.kind, r.first_difference.seq) == ("message", 4)
 
 
+def test_chain_json_and_import_record(vault, deal, tmp_path):
+    with zipfile.ZipFile(vault.export_bundle(deal, tmp_path)) as z:
+        chain = json.loads(z.read("chain.json"))
+        record = json.loads(z.read("import_record.json"))
+    assert [e["version_n"] for e in chain] == [1]
+    assert set(chain[0]) == {"version_n", "terms_set", "terms_digest", "root", "link", "leaf_count", "created_at"}
+    assert record["message_count"] == 5 and record["file_name"] == "ambiguous.txt"
+
+
+def test_audio_leaf_points_at_its_media_member(vault, deal, tmp_path):
+    with zipfile.ZipFile(vault.export_bundle(deal, tmp_path, include_media=True)) as z:
+        rows = [json.loads(line) for line in z.read("leaves.jsonl").decode("utf-8").split("\n") if line]
+        audio = next(r for r in rows if r["kind"] == "voice_audio")
+        assert audio["payload"] is None and z.read(audio["payload_file"]) == AUDIO
+
+
+def test_replaced_exported_audio_is_named(vault, deal, tmp_path):
+    data = vault.export_bundle(deal, tmp_path, include_media=True).read_bytes()
+    bundle = Bundle.from_zip(data)
+    name = next(n for n in bundle.files if n.startswith("media/"))
+    bundle.files[name] = b"OggS-replaced"
+    r = verify_bundle(bundle.zip_bytes())
+    assert r.verdict == "ALTERED" and r.first_difference.kind == "voice_audio"
+
+
+def test_readme_says_the_bundle_is_not_encrypted(vault, deal, tmp_path):
+    with zipfile.ZipFile(vault.export_bundle(deal, tmp_path)) as z:
+        assert "not encrypted" in z.read("README.txt").decode("utf-8")
+
+
 def test_export_does_not_leave_partial_files_on_failure(vault, deal, tmp_path):
     out = tmp_path / "readonly"
     out.mkdir()

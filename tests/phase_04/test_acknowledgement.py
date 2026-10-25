@@ -46,5 +46,17 @@ def test_window_limits_acknowledgement(supply_playbook):
     assert "price" in acked(rows, supply_playbook, window=6)
 
 
+def test_system_lines_are_not_replies(supply_playbook):
+    msgs = make_messages([("Raju", "200 shirts, 480 each"), ("Meena", "ok")])
+    msgs[1] = msgs[1].model_copy(update={"is_system": True})
+    terms = list(rules_terms(msgs, supply_playbook).values())
+    assert "price" not in acknowledged_keys(terms, msgs, me_id="Raju", counterparty_id="Meena")
+
+
+def test_third_sender_cannot_acknowledge(supply_playbook):
+    keys = acked([("Raju", "200 shirts, 480 each"), ("Ravi", "ok")], supply_playbook)
+    assert "price" not in keys
+
+
 def test_parties_need_both_people_in_chat(supply_playbook):
     assert "parties" not in acked([("Raju", "200 shirts, 480 each")], supply_playbook)

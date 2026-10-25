@@ -64,6 +64,7 @@ _PAID_WORDS = ["sent", "paid", "received", "transferred", "bheja", "bhej", "diya
 _FALLBACK_PAYMENT_WORDS = ["advance", "balance", "baaki", "baki", "remaining", "instalment", "milestone", "upfront", "peshgi"]
 _FALLBACK_PENALTY_WORDS = ["late", "penalty", "deduct", "deduction", "jurmana"]
 _GENERIC_UNITS = {"pcs", "pc", "pieces", "piece", "units", "unit", "items", "item", "nos", "sets", "set"}
+_PAY_VERB = re.compile(r"(?<![A-Za-z])(?:pay|paying|payment|bhugtan|dunga|dungi|denge|dega|degi)(?![A-Za-z])", re.IGNORECASE)
 _CLAUSE = re.compile(r",(?=\s|$)|;|[!?]|(?<![Rr]s)\.(?=\s|$)")
 _SENTENCE = re.compile(r";|[!?]|(?<![Rr]s)\.(?=\s|$)")
 
@@ -305,7 +306,24 @@ def extract_terms(
                         _Cand(MoneyValue(paise=str(a.paise), per=a.per), [src], review=review, kind="total" if a.per == "total" else "unit")
                     )
 
+        def date_term_for(d: Any) -> Term | None:
+            """The date term a date belongs to: the term whose cue words the message contains, unless the date sits in
+            a penalty clause or after a payment cue ("delivery by 15 Nov and the balance..." is still a delivery date)."""
+            owner = next((t for t in date_terms if cue[t.key] and cue[t.key].search(scan.nz.text)), None)
+            ctext = clause_text(d)
+            if not owner or (pen_re and pen_re.search(ctext)):
+                return None
+            if pay_re and pay_re.search(ctext):
+                seg = scan.segment(scan.clauses, d.start)
+                before = ctext[: max(scan.nz.norm_index(d.start) - seg[0], 0)]
+                own = [m.end() for m in cue[owner.key].finditer(before)] if cue[owner.key] else []
+                pay = [m.end() for m in pay_re.finditer(before)]
+                if not own or (pay and pay[-1] > own[-1]):
+                    return None
+            return owner
+
         # payment terms own the clauses that contain their cue words
+        claimed: set[tuple[int, int]] = set()
         for seg in scan.clauses:
             ctext = scan.text(seg)
 
@@ -315,10 +333,11 @@ def extract_terms(
             term = next((t for t in pay_terms if cue[t.key] and cue[t.key].search(ctext)), None)
             if not term:
                 continue
+            claimed.add(seg)
             ams = [a for a in amounts if here(a) and not in_penalty(a)]
             pcts = [p for p in percents if here(p)] if "percent" in term.parsers else []
             phs = [p for p in phrases if here(p) and p.kind not in ("advance", "instalments")]
-            dts = [d for d in dates if here(d)] if "dates" in term.parsers else []
+            dts = [d for d in dates if here(d) and date_term_for(d) is None] if "dates" in term.parsers else []
             used: list[Any] = [*ams[:1], *pcts[:1], *phs, *dts]
             if not used:
                 continue
@@ -348,12 +367,15 @@ def extract_terms(
                 value = PaymentValue(paise=str(amount.paise) if amount else None, when=when, days=days, date=on_date if when == "on_date" else None)
                 cands[term.key].append(_Cand(value, [src], review=review, pct_bp=None if amount or not pcts else pcts[0].basis_points))
 
+        # a vague promise to pay ("will pay soon") with no cue word belongs to the last payment term
+        for p in phrases:
+            seg = scan.segment(scan.clauses, p.start)
+            if pay_terms and p.kind == "later" and seg not in claimed and _PAY_VERB.search(scan.text(seg)):
+                cands[pay_terms[-1].key].append(_Cand(None, [scan.source(p.start, p.end)], reason=_reason(playbook, "vague_pay")))
+
         # dates belong to the date term whose cue words the message contains, outside payment and penalty clauses
         for d in dates:
-            ctext = clause_text(d)
-            if (pay_re and pay_re.search(ctext)) or (pen_re and pen_re.search(ctext)):
-                continue
-            owner = next((t for t in date_terms if cue[t.key] and cue[t.key].search(scan.nz.text)), None)
+            owner = date_term_for(d)
             if not owner:
                 continue
             src = scan.source(d.start, d.end)

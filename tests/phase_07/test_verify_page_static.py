@@ -51,5 +51,18 @@ def test_page_is_built_from_the_tested_modules():
     assert out.returncode == 0, out.stdout + out.stderr
 
 
+def test_results_are_written_with_text_nodes_not_html(html):
+    assert "innerHTML" not in html and "document.write" not in html and "eval(" not in html
+
+
+def test_page_has_a_drop_zone_and_a_file_picker(html):
+    assert 'type="file"' in html and "dragover" in html
+
+
+def test_page_includes_the_verifier_and_the_primitives(html):
+    assert "async function verifyBundle" in html and "async function merkleRoot" in html
+    assert "export " not in html.split("<script>")[1], "modules are inlined as plain script"
+
+
 def test_page_is_small_enough_to_audit():
     assert PAGE.stat().st_size < 300_000

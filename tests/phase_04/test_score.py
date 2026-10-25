@@ -103,6 +103,25 @@ def test_freelance_weights(freelance_playbook):
     assert compute_score(half, freelance_playbook).score == 30
 
 
+def test_score_delta(supply_playbook):
+    from packages.intelligence.score import ScoreDelta
+
+    before = compute_score(inputs(WORKED), supply_playbook).score
+    after = compute_score(inputs({**WORKED, "delivery_date": (True, S, True)}), supply_playbook).score
+    d = ScoreDelta(before, after)
+    assert (d.before, d.after, d.delta) == (55, 70, 15)
+
+
+def test_score_is_an_integer_and_rows_follow_playbook_order(supply_playbook):
+    r = compute_score(inputs(WORKED), supply_playbook)
+    assert isinstance(r.score, int) and [row.key for row in r.rows] == KEYS
+
+
+def test_duplicate_inputs_last_one_wins(supply_playbook):
+    twice = inputs() + [ScoreInput(key="price", confirmed=False, state=M, acknowledged_by_both=False)]
+    assert compute_score(twice, supply_playbook).score == 85
+
+
 @pytest.mark.parametrize("n_confirmed", range(9))
 def test_score_is_monotonic_in_confirmations(supply_playbook, n_confirmed):
     ov = {k: ((i < n_confirmed), S, True) for i, k in enumerate(KEYS)}

@@ -98,5 +98,75 @@ def test_anchor_present_is_reported_but_not_checked_offline():
     assert "network" in detail.lower()  # verifying the anchor itself needs the network
 
 
+def test_receipt_hash_edit_is_altered_and_named_the_receipt():
+    b = build_bundle()
+    env = b.json("receipt.json")
+    env["receipt_hash"] = "00" * 32
+    b.set_json("receipt.json", env)
+    r = verify_bundle(b.zip_bytes())
+    assert r.verdict == "ALTERED" and r.first_difference.kind == "receipt"
+    assert next(c for c in r.checks if c.name == "spec_version").ok is False
+
+
+def test_version_root_that_does_not_match_its_leaves():
+    b = build_bundle()
+    chain = b.json("chain.json")
+    chain[1]["leaf_count"] -= 1
+    b.set_json("chain.json", chain)
+    r = verify_bundle(b.zip_bytes())
+    assert r.verdict == "ALTERED"
+    assert (r.first_difference.kind, r.first_difference.version_n) == ("chain_link", 2)
+    assert next(c for c in r.checks if c.name == "version_roots").ok is False
+
+
+def test_chain_json_agreeing_with_itself_but_not_with_the_receipt_is_caught():
+    b = build_bundle()
+    chain = b.json("chain.json")
+    chain[2]["link"] = "11" * 32
+    b.set_json("chain.json", chain)
+    assert verify_bundle(b.zip_bytes()).first_difference.version_n == 3
+
+
+def test_extra_version_in_chain_json_is_altered():
+    b = build_bundle()
+    chain = b.json("chain.json")
+    b.set_json("chain.json", chain + [dict(chain[-1], version_n=4)])
+    assert verify_bundle(b.zip_bytes()).first_difference.version_n == 4
+
+
+def test_missing_import_record_is_altered():
+    b = build_bundle()
+    del b.files["import_record.json"]
+    assert verify_bundle(b.zip_bytes()).first_difference.kind == "import_record"
+
+
+def test_malformed_leaf_row_is_altered_not_a_crash():
+    b = build_bundle()
+    rows = b.leaves()
+    rows[3]["leaf_hash"] = "not hex"
+    b.set_leaves(rows)
+    r = verify_bundle(b.zip_bytes())
+    assert r.verdict == "ALTERED" and r.first_difference.seq == 4
+
+
+def test_leaf_row_in_the_wrong_order_is_altered():
+    b = build_bundle()
+    rows = b.leaves()
+    rows[1], rows[2] = rows[2], rows[1]
+    b.set_leaves(rows)
+    assert verify_bundle(b.zip_bytes()).first_difference.seq == 3
+
+
+def test_command_line_summary(tmp_path, capsys):
+    from packages.integrity.verify import main
+
+    p = tmp_path / "ok.zip"
+    p.write_bytes(build_bundle().zip_bytes())
+    assert main([str(p)]) == 0
+    assert "✓ UNCHANGED since recording" in capsys.readouterr().out
+    p.write_bytes(b"nope")
+    assert main([str(p)]) == 2
+
+
 def test_verifier_does_not_use_the_network(block_network):
     assert verify_bundle(build_bundle().zip_bytes()).verdict == "UNCHANGED"

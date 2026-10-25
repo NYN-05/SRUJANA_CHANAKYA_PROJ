@@ -1,0 +1,8 @@
+# Reasons for flags that have no playbook text of their own. Plain words, no legal terms.
+missing_term: "No message mentions: {label_l}."
+contradiction: "{label} is {items}."
+contradiction_joiner: " and "
+contradiction_item: "{value} in message #{seq}"
+needs_review: "Please check this before you confirm: {label_l}."
+unacknowledged_one: "Only {name} mentioned {label_l}. The other side has not replied yet."
+unacknowledged_none: "{label} has no reply from the other side yet."

@@ -101,3 +101,28 @@ def test_nothing_confirmed_refused(vault):
 def test_version_writes_audit(vault, deal):
     vault.create_version(deal)
     assert vault.audit_events(deal)[-1].action == "create_version"
+
+
+def test_correction_after_a_version_changes_only_the_next_one(vault, deal):
+    v1 = vault.create_version(deal)
+    vault.correct_term(deal, "delivery_date", DateValue(date="2026-12-01"))
+    assert vault.versions(deal) == [v1]
+    assert vault.create_version(deal).terms_set != v1.terms_set
+
+
+def test_terms_set_hashes_only_the_hashed_fields(vault, deal):
+    term = vault.create_version(deal).terms_set["terms"][0]
+    assert set(term) == {"key", "value", "sources", "confirmed_by", "confirmed_at"}
+
+
+def test_version_numbers_are_per_deal(vault, deal):
+    other, _ = commit_sample(vault, "clean.txt", "Anita", "Rohit")
+    vault.confirm_term(other, "price")
+    vault.create_version(deal)
+    assert vault.create_version(other).n == 1
+
+
+def test_unknown_versions_in_a_diff(vault, deal):
+    vault.create_version(deal)
+    with pytest.raises(KeyError):
+        vault.diff_versions(deal, 1, 2)

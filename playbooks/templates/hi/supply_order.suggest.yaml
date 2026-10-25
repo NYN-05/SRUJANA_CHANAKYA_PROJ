@@ -1,0 +1,49 @@
+# Hindi draft: needs native-speaker review (Q-17). No literal rupee sign before a money slot (the formatter adds it).
+delivery_date+final_payment:
+  casual: "एक बात: डिलीवरी {delivery_date} तक और बाकी {balance} डिलीवरी पर, ठीक है?"
+  polite: "बस पक्का करने के लिए, डिलीवरी {delivery_date} तक और बाकी {balance} डिलीवरी पर, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें: डिलीवरी {delivery_date} तक, बाकी {balance} डिलीवरी पर देना है।"
+delivery_date+late_penalty:
+  casual: "एक बात: डिलीवरी {delivery_date} तक, और देरी हुई तो {late_penalty}। ठीक है?"
+  polite: "बस पक्का करने के लिए, डिलीवरी {delivery_date} तक, और देरी हुई तो {late_penalty}, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें: डिलीवरी {delivery_date} तक; देरी हुई तो {late_penalty}।"
+advance+final_payment:
+  casual: "एक बात: एडवांस {advance} और बाकी {balance} डिलीवरी पर, ठीक है?"
+  polite: "बस पक्का करने के लिए, एडवांस {advance} है और बाकी {balance} डिलीवरी पर देना है, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें: एडवांस {advance}, बाकी {balance} डिलीवरी पर देना है।"
+quantity+scope:
+  casual: "एक बात: कुल {quantity}, ठीक है?"
+  polite: "बस पक्का करने के लिए, हम {quantity} दे रहे हैं, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि क्या सप्लाई होगा: {quantity}।"
+delivery_date:
+  casual: "एक बात: डिलीवरी {delivery_date} तक, ठीक है?"
+  polite: "बस पक्का करने के लिए, डिलीवरी {delivery_date} तक होगी, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया डिलीवरी की तारीख पक्की करें: {delivery_date}।"
+final_payment:
+  casual: "एक बात: बाकी {balance} डिलीवरी पर देना है, ठीक है?"
+  polite: "बस पक्का करने के लिए, बाकी {balance} डिलीवरी पर देना है, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया बाकी {balance} और उसकी तारीख पक्की करें।"
+late_penalty:
+  casual: "एक बात: डिलीवरी में देरी हुई तो {late_penalty}, ठीक है?"
+  polite: "बस पक्का करने के लिए, डिलीवरी में देरी हुई तो {late_penalty}, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि देरी होने पर क्या होगा: {late_penalty}।"
+price:
+  casual: "एक बात: कीमत {price} है, ठीक है?"
+  polite: "बस पक्का करने के लिए, कीमत {price} है, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया कीमत पक्की करें: {price}।"
+advance:
+  casual: "एक बात: एडवांस {advance} है, ठीक है?"
+  polite: "बस पक्का करने के लिए, एडवांस {advance} है, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया एडवांस पक्का करें: {advance}।"
+quantity:
+  casual: "एक बात: मात्रा {quantity} है, ठीक है?"
+  polite: "बस पक्का करने के लिए, मात्रा {quantity} है, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया मात्रा पक्की करें: {quantity}।"
+scope:
+  casual: "एक बात: हम {scope} दे रहे हैं, ठीक है?"
+  polite: "बस पक्का करने के लिए, हम {scope} दे रहे हैं, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि क्या सप्लाई होगा: {scope}।"
+parties:
+  casual: "एक बात: यह सौदा {parties} के बीच है, ठीक है?"
+  polite: "बस पक्का करने के लिए, यह सौदा {parties} के बीच है, ठीक है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि यह सौदा किनके बीच है: {parties}।"

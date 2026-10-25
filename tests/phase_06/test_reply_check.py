@@ -120,6 +120,50 @@ def test_multi_line_paste_uses_last_counterparty_confirm(vault, setup):
     assert vault.check_reply(recap.id, paste).state == ConfirmationState.CONFIRMED
 
 
+def test_unknown_recap(vault, setup):
+    from packages.vault import RecapNotFound
+
+    with pytest.raises(RecapNotFound):
+        vault.check_reply("no-such-recap", "CONFIRM ABCD", sender="Meena")
+
+
+def test_iphone_style_header_confirms(vault, setup):
+    _, recap = setup
+    res = vault.check_reply(recap.id, f"[24/10/2026, 11:50:10] Meena: CONFIRM {recap.echo_code}")
+    assert res.state == ConfirmationState.CONFIRMED and res.message_en == "The other side confirmed this recap."
+
+
+def test_look_alike_letters_in_the_code_are_mapped(vault, setup):
+    # O -> 0, I and L -> 1 apply to the code only (I-08); the word CONFIRM itself is untouched
+    _, recap = setup
+    spoken = recap.echo_code.replace("0", "O").replace("1", "I")
+    assert vault.check_reply(recap.id, f"Confirm {spoken}", sender="Meena").state == ConfirmationState.CONFIRMED
+
+
+def test_failure_messages_have_hindi_drafts(vault, setup):
+    _, recap = setup
+    res = vault.check_reply(recap.id, "CONFIRM ZZZZ", sender="Meena")
+    assert res.message_hi and res.message_hi != res.message_en
+
+
+def test_sender_may_be_the_participant_id_or_display_name_in_any_case(vault, setup):
+    _, recap = setup
+    assert vault.check_reply(recap.id, f"CONFIRM {recap.echo_code}", sender="  meena ").state == ConfirmationState.CONFIRMED
+
+
+def test_confirmation_marks_every_term_of_the_version_acknowledged(vault, setup):
+    deal, recap = setup
+    assert vault.agreed_terms(deal)["price"].acknowledged_by_other is False
+    vault.check_reply(recap.id, f"CONFIRM {recap.echo_code}", sender="Meena")
+    assert all(t.acknowledged_by_other for t in vault.agreed_terms(deal).values())
+
+
+def test_failed_check_changes_no_acknowledgement(vault, setup):
+    deal, recap = setup
+    vault.check_reply(recap.id, "CONFIRM ZZZZ", sender="Meena")
+    assert not any(t.acknowledged_by_other for t in vault.agreed_terms(deal).values())
+
+
 def test_check_reply_is_audited(vault, setup):
     deal, recap = setup
     vault.check_reply(recap.id, f"CONFIRM {recap.echo_code}", sender="Meena")

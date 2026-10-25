@@ -1,0 +1,12 @@
+# Recap lines for the freelance playbook (same format as supply_order.recap.yaml).
+greeting: "Hi {other_name}, just confirming what we discussed:"
+closing: "If all correct, reply: CONFIRM {code}"
+bullet: "• "
+lines:
+  - {key: deliverable, terms: [deliverable], templates: {plain: "Work: {deliverable}"}}
+  - {key: price, terms: [price], templates: {plain: "Fee: {price}"}}
+  - {key: payment_schedule, terms: [payment_schedule], templates: {plain: "Payments: {payment_schedule}"}}
+  - {key: deadline, terms: [deadline], templates: {plain: "Deadline: {deadline}"}}
+  - {key: revisions, terms: [revisions], templates: {plain: "Changes included: {revisions}"}}
+  - {key: ownership, terms: [ownership], templates: {plain: "Ownership: {ownership}"}}
+  - {key: cancellation, terms: [cancellation], templates: {plain: "If the work is cancelled: {cancellation}"}}

@@ -67,6 +67,42 @@ def test_other_gaps_have_text(supply_playbook, target):
         assert s.text and "{" not in s.text
 
 
+def test_missing_pair_template_falls_back_to_the_top_target(supply_playbook):
+    s = build_suggestion(["price", "scope"], Tone.POLITE, KNOWN, supply_playbook, "en")
+    assert s.target_term_keys == ["price"] and s.text == "Just to confirm, the price is ₹480 each, right?"
+
+
+def test_missing_template_raises_a_typed_error(supply_playbook):
+    from packages.intelligence.suggest import TemplateMissing
+
+    with pytest.raises(TemplateMissing) as err:
+        build_suggestion(["no_such_term"], Tone.POLITE, KNOWN, supply_playbook, "en")
+    assert (err.value.key, err.value.tone, err.value.lang) == ("no_such_term", "polite", "en")
+
+
+def test_unknown_balance_is_a_placeholder_for_the_final_payment_term(supply_playbook):
+    s = build_suggestion(["final_payment"], Tone.CASUAL, {}, supply_playbook, "en")
+    assert "[balance]" in s.text and s.needs_user_input == ["final_payment"]
+    hi = build_suggestion(["final_payment"], Tone.CASUAL, {}, supply_playbook, "hi")
+    assert "[बाकी रकम]" in hi.text
+
+
+def test_hindi_has_no_latin_words_when_all_values_are_known(supply_playbook):
+    import re
+
+    values = dict(KNOWN, delivery_date=DateValue(date="2026-11-15"))
+    for tone in Tone:
+        text = build_suggestion(TARGETS, tone, values, supply_playbook, "hi").text
+        assert not re.search(r"[A-Za-z]", text), text
+
+
+def test_same_facts_in_all_tones_for_every_supply_pair(supply_playbook):
+    values = dict(KNOWN, delivery_date=DateValue(date="2026-11-15"), late_penalty=TextValue(text="₹500 per day"))
+    for targets in (["delivery_date", "late_penalty"], ["advance", "final_payment"], ["quantity", "scope"]):
+        texts = [build_suggestion(targets, t, values, supply_playbook, "en").text for t in Tone]
+        assert len(set(texts)) == 3 and all("[" not in x for x in texts)
+
+
 def test_suggestion_has_no_send_capability(supply_playbook):
     s = build_suggestion(TARGETS, Tone.POLITE, KNOWN, supply_playbook, "en")
     assert not any(hasattr(s, name) for name in ("send", "post", "deliver"))

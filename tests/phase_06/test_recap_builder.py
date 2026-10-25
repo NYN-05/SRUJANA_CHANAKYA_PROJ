@@ -146,6 +146,52 @@ def test_freelance_recap(freelance_playbook):
     assert dict(r.omitted_terms) == {"ownership": "not_confirmed", "cancellation": "not_confirmed"}
 
 
+def test_total_price_has_its_own_line(supply_playbook):
+    terms = dict(RAJU_MEENA, price=agreed("price", MoneyValue(paise="9600000", per="total"), 1))
+    r = build_recap(terms, supply_playbook, "en", "Meena", deal_id="d1", version_n=1)
+    assert "200 shirts for ₹96,000" in [l.text for l in r.lines]
+
+
+def test_balance_without_an_amount_still_reads_well(supply_playbook):
+    terms = dict(RAJU_MEENA, final_payment=agreed("final_payment", PaymentValue(when="on_delivery"), 13))
+    r = build_recap(terms, supply_playbook, "en", "Meena", deal_id="d1", version_n=1)
+    assert "Balance due on delivery" in [l.text for l in r.lines]
+
+
+def test_unusable_value_is_left_out_not_guessed(supply_playbook):
+    terms = dict(RAJU_MEENA, final_payment=agreed("final_payment", PaymentValue(), 13))
+    r = build_recap(terms, supply_playbook, "en", "Meena", deal_id="d1", version_n=1)
+    assert not any(l.term_key == "final_payment" for l in r.lines)
+    assert dict(r.omitted_terms)["final_payment"] == "incomplete_line"
+
+
+def test_unconfirmed_required_terms_without_a_line_are_listed(supply_playbook):
+    terms = {k: v for k, v in RAJU_MEENA.items() if k != "parties"}
+    r = build_recap(terms, supply_playbook, "en", "Meena", deal_id="d1", version_n=1)
+    assert dict(r.omitted_terms)["parties"] == "not_confirmed"
+
+
+def test_optional_terms_are_never_listed_as_omitted(supply_playbook):
+    r = build_recap(RAJU_MEENA, supply_playbook, "en", "Meena", deal_id="d1", version_n=1)
+    assert "gst_status" not in dict(r.omitted_terms)
+
+
+def test_draft_carries_the_closing_line_but_no_code(supply_playbook):
+    r = build_recap(RAJU_MEENA, supply_playbook, "hi", "Meena", deal_id="d1", version_n=1)
+    assert r.closing == "अगर सब सही है तो जवाब दें: CONFIRM {code}"
+    assert "CONFIRM" not in r.body_text
+
+
+def test_a_date_shown_for_the_balance_is_the_balances_own(supply_playbook):
+    terms = dict(
+        RAJU_MEENA,
+        advance=agreed("advance", PaymentValue(paise="4800000", when="on_date", date="2026-10-20"), 4),
+        final_payment=agreed("final_payment", PaymentValue(paise="4800000", when="on_date", date="2026-12-01"), 13),
+    )
+    texts = [l.text for l in build_recap(terms, supply_playbook, "en", "Meena", deal_id="d1", version_n=1).lines]
+    assert "₹48,000 advance due on 20 Oct 2026" in texts and "Balance ₹48,000 on 1 Dec 2026" in texts
+
+
 def test_builder_is_deterministic(supply_playbook):
     a = build_recap(RAJU_MEENA, supply_playbook, "en", "Meena", deal_id="d1", version_n=1)
     b = build_recap(dict(reversed(list(RAJU_MEENA.items()))), supply_playbook, "en", "Meena", deal_id="d1", version_n=1)

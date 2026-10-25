@@ -1,0 +1,8 @@
+# Hindi draft: needs native-speaker review (Q-17).
+missing_term: "किसी संदेश में इसका ज़िक्र नहीं है: {label_l}।"
+contradiction: "{label} के दो अलग मान हैं: {items}।"
+contradiction_joiner: " और "
+contradiction_item: "संदेश #{seq} में {value}"
+needs_review: "कृपया पक्का करने से पहले इसे जाँच लें: {label_l}।"
+unacknowledged_one: "सिर्फ़ {name} ने {label_l} की बात की है। दूसरी तरफ़ से अभी जवाब नहीं आया।"
+unacknowledged_none: "{label} पर दूसरी तरफ़ से अभी जवाब नहीं आया।"

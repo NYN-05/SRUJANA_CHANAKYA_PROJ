@@ -84,6 +84,49 @@ def test_every_returned_term_is_a_proposal(supply_playbook):
     assert {t.key for t in result.terms} == {t.key for t in supply_playbook.terms}
 
 
+def test_a_model_that_is_unsure_proposes_nothing(supply_playbook):
+    result, rules = refine(RAJU_MEENA, supply_playbook, runner_for({"key": "price", "value": "999", "unit": "each", "state": "unclear", "source_seqs": [1], "quote": "480 each"}))
+    assert result.terms == rules
+
+
+def test_conflicts_in_the_rules_are_not_overridden(supply_playbook):
+    rows = [("Raju", "total 50,000"), ("Meena", "ok"), ("Raju", "no, total 45,000")]
+    result, rules = refine(rows, supply_playbook, runner_for({"key": "price", "value": "50000", "unit": "total", "source_seqs": [1], "quote": "total 50,000"}))
+    price = terms_by_key(result.terms)["price"]
+    assert price.state == TermState.CONTRADICTED and price == terms_by_key(rules)["price"]
+
+
+def test_only_the_first_model_term_per_key_counts(supply_playbook):
+    good = {"key": "price", "value": "480", "unit": "each", "source_seqs": [1], "quote": "480 each"}
+    other = dict(good, value="500")
+    result, _ = refine(RAJU_MEENA, supply_playbook, runner_for(good, other))
+    assert terms_by_key(result.terms)["price"].origin == Origin.BOTH and terms_by_key(result.terms)["price"].needs_review is False
+
+
+def test_unknown_keys_and_bad_values_are_counted_as_dropped(supply_playbook):
+    result, _ = refine(RAJU_MEENA, supply_playbook, runner_for({"key": "discount", "value": "5", "source_seqs": [1], "quote": "x"}, {"key": "price", "value": "lots", "source_seqs": [1], "quote": "480 each"}))
+    assert result.dropped == 2 and result.grounding_failures == 0 and result.used_model is True
+
+
+def test_ai_unclear_rules_term_gets_an_ai_proposal_to_check(supply_playbook):
+    rows = RAJU_MEENA + [("Meena", "delivery on 15 Nov 2026")]
+    msgs = make_messages(RAJU_MEENA)
+    rules = list(rules_terms(msgs, supply_playbook).values())  # the rules only saw "next week"
+    full = make_messages(rows)
+    runner = runner_for({"key": "delivery_date", "value": "2026-11-15", "source_seqs": [6], "quote": "15 Nov 2026"})
+    result = refine_terms(rules, full, supply_playbook, runner, timeout_s=5, me_id="Raju", counterparty_id="Meena")
+    d = terms_by_key(result.terms)["delivery_date"]
+    assert (d.origin, d.needs_review, d.state) == (Origin.AI, True, TermState.STATED) and d.value.date == "2026-11-15"
+
+
+def test_ai_contribution_metrics():
+    from eval.runner.metrics import ai_contribution
+
+    gold = {"price": "48000", "delivery_date": "2026-11-15"}
+    report = ai_contribution(gold, {"price": "48000"}, {"price": "48000", "delivery_date": "2026-11-15"})
+    assert report["delta"]["recall"] == 0.5 and report["rules_and_ai"]["f1"] == 1.0 and report["rules_only"]["precision"] == 1.0
+
+
 def test_no_runner_means_rules_result(supply_playbook):
     msgs = make_messages(RAJU_MEENA)
     rules = list(rules_terms(msgs, supply_playbook).values())

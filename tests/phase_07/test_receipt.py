@@ -58,6 +58,19 @@ def test_recorded_at_is_device_clock_with_offset(vault, deal):
     assert r.body["anchor"] is None
 
 
+def test_version_records_the_leaf_count_its_root_covers(vault, deal):
+    first, second = vault.versions(deal)
+    leaves = [l.leaf_hash for l in vault.leaves(deal)]
+    assert merkle_root(leaves[: first.leaf_count]) == first.root
+    assert merkle_root(leaves[: second.leaf_count]) == second.root
+    assert first.leaf_count < second.leaf_count == len(leaves)
+
+
+def test_receipt_before_any_version_has_an_empty_chain(vault):
+    deal_id, _ = commit_sample(vault, "ambiguous.txt", "Raju", "Meena")
+    assert vault.build_receipt(deal_id).body["chain"] == []
+
+
 def test_receipts_are_stored(vault, deal):
     a = vault.build_receipt(deal)
     assert vault.audit_events(deal)[-1].action in {"receipt", "export"}

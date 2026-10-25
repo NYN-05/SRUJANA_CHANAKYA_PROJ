@@ -52,6 +52,17 @@ def test_format_date_accepts_iso_text():
     assert format_date("2026-11-15", "en") == "15 Nov 2026"
 
 
+def test_format_inr_rejects_bool_and_float():
+    for bad in (True, 12.5, None, "-5", "٤٥"):
+        with pytest.raises(ValueError):
+            format_inr(bad)
+
+
+def test_every_month_has_a_name_in_both_languages():
+    names = {format_date(date(2026, m, 1), lang) for m in range(1, 13) for lang in ("en", "hi")}
+    assert len(names) == 24
+
+
 def test_format_date_unknown_language():
     with pytest.raises(ValueError):
         format_date(date(2026, 11, 15), "xx")

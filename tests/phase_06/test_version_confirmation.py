@@ -45,6 +45,29 @@ def test_confirmation_does_not_carry_to_next_version(vault, supply_playbook):
     assert vault.version_confirmed(deal, v2.n) is False
 
 
+def test_states_sent_then_confirmed(vault, supply_playbook):
+    from packages.contracts import ConfirmationState
+
+    deal, _ = commit_sample(vault, "ambiguous.txt", "Raju", "Meena")
+    confirm_clear_terms(vault, deal)
+    _, recap = _recap(vault, deal, supply_playbook)
+    assert [c.state for c in vault.confirmations(recap.id)] == [ConfirmationState.SENT]
+    vault.check_reply(recap.id, f"CONFIRM {recap.echo_code}", sender="Meena")
+    vault.approve_recap(recap.id)
+    states = [(c.party, c.state) for c in vault.confirmations(recap.id)]
+    assert ("other", ConfirmationState.CONFIRMED) in states and ("me", ConfirmationState.CONFIRMED) in states
+
+
+def test_a_confirmation_never_counts_for_another_recap(vault, supply_playbook):
+    deal, _ = commit_sample(vault, "ambiguous.txt", "Raju", "Meena")
+    confirm_clear_terms(vault, deal)
+    v, first = _recap(vault, deal, supply_playbook)
+    vault.approve_recap(first.id)
+    second = vault.create_recap(deal, v.n, build_recap(vault.agreed_terms(deal), supply_playbook, "hi", "Meena", deal_id=deal, version_n=v.n))
+    vault.check_reply(second.id, f"CONFIRM {second.echo_code}", sender="Meena")
+    assert vault.version_confirmed(deal, v.n) is False, "approval and reply belong to different recaps"
+
+
 def test_acknowledgement_after_confirmed_recap(vault, supply_playbook):
     # FR-SCO-001: a confirmed recap containing a term counts as acknowledged by both
     deal, _ = commit_sample(vault, "ambiguous.txt", "Raju", "Meena")

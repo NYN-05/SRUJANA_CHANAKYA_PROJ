@@ -96,3 +96,41 @@ def test_acknowledge_records_flag(vault, deal):
     vault.confirm_term(deal, "price")
     vault.acknowledge(deal, "price")
     assert vault.agreed_terms(deal)["price"].acknowledged_by_other is True
+
+
+def test_explicit_value_equal_to_the_proposal_keeps_its_origin(vault, deal):
+    proposal = vault.proposals(deal)["price"]
+    assert vault.confirm_term(deal, "price", proposal.value).origin == Origin.RULES
+    assert vault.confirm_term(deal, "price", MoneyValue(paise="50000", per="item")).origin == Origin.USER
+
+
+def test_dict_values_are_validated(vault, deal):
+    agreed = vault.correct_term(deal, "delivery_date", {"kind": "date", "date": "2026-11-15"})
+    assert agreed.value == DateValue(date="2026-11-15")
+    with pytest.raises(Exception):
+        vault.correct_term(deal, "delivery_date", {"kind": "date", "date": "15 November"})
+
+
+def test_acknowledge_needs_an_agreed_term(vault, deal):
+    with pytest.raises(TermNotConfirmable):
+        vault.acknowledge(deal, "price")
+
+
+def test_reject_unknown_key(vault, deal):
+    with pytest.raises(KeyError):
+        vault.reject_term(deal, "not_a_term")
+
+
+def test_conflict_candidate_keeps_that_candidates_sources(vault):
+    deal_id, _ = commit_sample(vault, "contradictory.txt", "Patel", "Sai")
+    proposal = vault.proposals(deal_id)["price"]
+    chosen = proposal.candidates[1]
+    agreed = vault.confirm_term(deal_id, "price", chosen.value)
+    assert agreed.sources == chosen.sources
+
+
+def test_audit_events_are_per_deal(vault, deal):
+    other, _ = commit_sample(vault, "clean.txt", "Anita", "Rohit")
+    vault.confirm_term(deal, "price")
+    assert {e.deal_id for e in vault.audit_events(deal)} == {deal}
+    assert {e.deal_id for e in vault.audit_events(None)} == {deal, other}

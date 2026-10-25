@@ -1,0 +1,41 @@
+# Hindi draft: needs native-speaker review (Q-17). No literal rupee sign before a money slot.
+deadline+deliverable:
+  casual: "एक बात: आपको {deliverable} {deadline} तक मिलेगा, ठीक है?"
+  polite: "बस पक्का करने के लिए, आपको {deliverable} {deadline} तक मिलेगा। क्या यह ठीक रहेगा?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें: {deliverable} {deadline} तक दिया जाएगा।"
+payment_schedule+price:
+  casual: "एक बात: फीस {price} है और भुगतान ऐसे होगा: {payment_schedule}। ठीक है?"
+  polite: "बस पक्का करने के लिए, फीस {price} है और भुगतान ऐसे होगा: {payment_schedule}। क्या यह ठीक रहेगा?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें: फीस {price}; भुगतान: {payment_schedule}।"
+deadline:
+  casual: "एक बात: आखिरी तारीख {deadline} है, ठीक है?"
+  polite: "बस पक्का करने के लिए, आखिरी तारीख {deadline} है। क्या यह ठीक रहेगा?"
+  firm: "बात साफ़ रखने के लिए, कृपया आखिरी तारीख पक्की करें: {deadline}।"
+deliverable:
+  casual: "एक बात: आपको {deliverable} मिलेगा, ठीक है?"
+  polite: "बस पक्का करने के लिए, आपको {deliverable} मिलेगा, सही है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि क्या दिया जाएगा: {deliverable}।"
+price:
+  casual: "एक बात: फीस {price} है, ठीक है?"
+  polite: "बस पक्का करने के लिए, फीस {price} है। क्या यह ठीक रहेगा?"
+  firm: "बात साफ़ रखने के लिए, कृपया फीस पक्की करें: {price}।"
+payment_schedule:
+  casual: "एक बात: भुगतान ऐसे होगा: {payment_schedule}, ठीक है?"
+  polite: "बस पक्का करने के लिए, भुगतान ऐसे होगा: {payment_schedule}। क्या यह ठीक रहेगा?"
+  firm: "बात साफ़ रखने के लिए, कृपया भुगतान की तारीखें पक्की करें: {payment_schedule}।"
+revisions:
+  casual: "एक बात: {revisions} शामिल हैं, ठीक है?"
+  polite: "बस पक्का करने के लिए, फीस में {revisions} शामिल हैं, सही है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि कितने बदलाव शामिल हैं: {revisions}।"
+ownership:
+  casual: "एक बात: तैयार काम का मालिक कौन होगा? मेरे हिसाब से {ownership}।"
+  polite: "बस पक्का करने के लिए, तैयार काम का मालिक या इस्तेमाल करने वाला: {ownership}, सही है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि तैयार काम का मालिक कौन है: {ownership}।"
+cancellation:
+  casual: "एक बात: काम रद्द हुआ तो {cancellation}, ठीक है?"
+  polite: "बस पक्का करने के लिए, काम रद्द या बंद हुआ तो {cancellation}। क्या यह ठीक रहेगा?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि काम रद्द होने पर क्या होगा: {cancellation}।"
+parties:
+  casual: "एक बात: यह काम {parties} के बीच है, ठीक है?"
+  polite: "बस पक्का करने के लिए, यह काम {parties} के बीच है, सही है?"
+  firm: "बात साफ़ रखने के लिए, कृपया पक्का करें कि यह काम किनके बीच है: {parties}।"

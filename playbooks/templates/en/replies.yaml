@@ -1,0 +1,6 @@
+# What the user is told after checking a pasted reply (PHASES.md Phase 6, task 7).
+confirmed: "The other side confirmed this recap."
+code_mismatch: "code does not match this recap"
+stale_code: "this code is for an older version"
+wrong_sender: "sender is not the other party"
+no_code: "We could not find a CONFIRM code in this reply."

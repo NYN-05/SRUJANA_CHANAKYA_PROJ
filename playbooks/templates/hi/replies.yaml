@@ -1,0 +1,6 @@
+# Hindi draft: needs native-speaker review (Q-17).
+confirmed: "दूसरी तरफ़ से इस सार की पुष्टि हो गई।"
+code_mismatch: "यह कोड इस सार से मेल नहीं खाता।"
+stale_code: "यह कोड पुराने संस्करण का है।"
+wrong_sender: "भेजने वाला दूसरा पक्ष नहीं है।"
+no_code: "इस जवाब में CONFIRM कोड नहीं मिला।"

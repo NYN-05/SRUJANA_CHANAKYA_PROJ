@@ -95,3 +95,30 @@ def test_second_import_into_new_deal_has_its_own_tree(vault):
     r1 = merkle_root([l.leaf_hash for l in vault.leaves(d1)])
     r2 = merkle_root([l.leaf_hash for l in vault.leaves(d2)])
     assert r1 != r2  # different salts and ids
+
+
+def test_second_import_into_the_same_deal_continues_the_sequence(vault):
+    draft = sample_draft("ambiguous.txt", "Raju", "Meena")
+    raw = (CHATS / "ambiguous.txt").read_bytes()
+    deal = vault.commit_import(draft, export_bytes=raw, file_name="a.txt", media={})
+    again = sample_draft("ambiguous.txt", "Raju", "Meena", deal_id=deal)  # a second export of the same conversation
+    vault.commit_import(again, export_bytes=b"second", file_name="b.txt", media={})
+    assert [m.seq for m in vault.messages(deal)] == list(range(1, len(vault.messages(deal)) + 1))
+    assert [l.seq for l in vault.leaves(deal)] == list(range(1, len(vault.leaves(deal)) + 1))
+    assert len(vault.deals()) == 1 and vault.import_record(deal).file_name == "a.txt"
+
+
+def test_attachment_hash_links_a_message_to_its_media(vault):
+    draft = sample_draft("ambiguous.txt", "Raju", "Meena")
+    draft.messages[0] = draft.messages[0].model_copy(update={"text": "PTT-1.opus (file attached)"})
+    audio = b"OggS-linked"
+    deal = vault.commit_import(draft, export_bytes=b"x", file_name="a.txt", media={"PTT-1.opus": audio})
+    assert vault.messages(deal)[0].attachment_hash == hashlib.sha256(audio).hexdigest()
+    assert vault.voice_notes(deal)[0].message_id == draft.messages[0].id
+    assert vault.voice_notes(deal)[0].file_name == "PTT-1.opus"
+
+
+def test_participants_are_stored_encrypted_and_readable(vault):
+    deal, _ = commit_sample(vault, "group.txt", "Raju", "Meena")
+    roles = {p.display_name: (p.role, p.is_me) for p in vault.participants(deal)}
+    assert roles == {"Raju": ("party", True), "Meena": ("party", False), "Ravi": ("context", False)}

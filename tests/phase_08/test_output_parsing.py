@@ -86,6 +86,48 @@ def test_quantity_is_integer_with_null_unit_for_revisions(freelance_playbook):
     assert terms[0].value == QuantityValue(amount=2, unit=None)
 
 
+@pytest.mark.parametrize("value,paise", [("₹60,000", "6000000"), ("50k", "5000000"), ("1.5 lakh", "15000000"), ("1,50,000", "15000000"), (480, "48000"), ("480.50", "48050")])
+def test_money_forms_become_paise(supply_playbook, value, paise):
+    terms, problems = parse(raw(term(value=value)), supply_playbook)
+    assert terms[0].value.paise == paise and problems == []
+
+
+@pytest.mark.parametrize("value,when", [("paid", "paid"), ("On_Delivery", "on_delivery"), ("on_completion", "on_completion")])
+def test_payment_timing_words(supply_playbook, value, when):
+    terms, _ = parse(raw(term(key="final_payment", value=value, unit=None)), supply_playbook)
+    assert terms[0].value.when == when
+
+
+def test_payment_amount_is_a_payment_value(supply_playbook):
+    from packages.contracts import PaymentValue
+
+    terms, _ = parse(raw(term(key="advance", value="48000", unit=None)), supply_playbook)
+    assert terms[0].value == PaymentValue(paise="4800000")
+
+
+@pytest.mark.parametrize("value", [2.5, "two", "-3", True])
+def test_quantity_must_be_a_whole_number(freelance_playbook, value):
+    terms, _ = parse_model_output(raw(term(key="revisions", value=value, unit=None)), freelance_playbook, MSGS)
+    assert terms[0].value is None and terms[0].needs_review
+
+
+def test_party_and_text_values(supply_playbook):
+    from packages.contracts import PartyValue, TextValue
+
+    terms, _ = parse(raw(term(key="parties", value="Raju, Meena", unit=None), term(key="scope", value="shirts", unit=None)), supply_playbook)
+    assert terms[0].value == PartyValue(names=["Raju", "Meena"]) and terms[1].value == TextValue(text="shirts")
+
+
+def test_entries_that_are_not_objects_are_counted(supply_playbook):
+    terms, problems = parse(json.dumps({"terms": ["price", 5, None, term()]}), supply_playbook)
+    assert len(terms) == 1 and [p.kind for p in problems] == ["bad_entry"] * 3
+
+
+def test_invalid_date_text_needs_review(supply_playbook):
+    terms, _ = parse(raw(term(key="delivery_date", value="15 November", unit=None)), supply_playbook)
+    assert terms[0].value is None and terms[0].needs_review
+
+
 def test_source_positions_must_be_integers(supply_playbook):
     terms, problems = parse(raw(term(source_seqs=["m1"])), supply_playbook)
     assert terms == [] or terms[0].needs_review

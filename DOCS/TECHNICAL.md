@@ -1076,7 +1076,7 @@ receipt_hash = H(0x40 || JCS(body))
 | `anchor` | Null, or `{network, tx, block_time}` (P1) |
 | `import_record_hash` | Hex of `H(0x16 || JCS(import_record))`, so a changed import record is detected (PHASES.md I-09) |
 
-The receipt bundle (`.zip`) contains: `receipt.json` (the envelope), `leaves.jsonl` (one `LeafRow` per line: sequence, leaf type, leaf hash and, for disclosed leaves, the salt, payload digest and payload), `chain.json`, `media/` (audio and attachments, only if exported) and `README.txt` (how to verify). The manifest is the contract `ReceiptBundle`. Leaves appear in tree order.
+The receipt bundle (`.zip`) contains: `receipt.json` (the envelope), `leaves.jsonl` (one `LeafRow` per line: sequence, leaf type, leaf hash and, for disclosed leaves, the salt, payload digest and payload), `chain.json` (each version also lists `leaf_count`, the tree prefix its root covers), `import_record.json` (its plain hash must equal `import_record_hash`, I-09), `media/` (audio and attachments, only if exported) and `README.txt` (how to verify, with the limit text). The exact member formats are in PHASES.md Appendix D. Leaves appear in tree order. A removed leaf is named by the first leaf after the gap; when only the root fails, the first differing item is `root`; a receipt hash that does not match its body is `receipt` (I-21).
 
 ### 10. Verification algorithm
 

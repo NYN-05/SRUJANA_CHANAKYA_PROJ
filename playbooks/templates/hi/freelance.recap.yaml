@@ -1,0 +1,12 @@
+# Hindi draft: needs native-speaker review (Q-17). CONFIRM and the code stay in Latin letters.
+greeting: "नमस्ते {other_name}, हमारी बात का सार यह है:"
+closing: "अगर सब सही है तो जवाब दें: CONFIRM {code}"
+bullet: "• "
+lines:
+  - {key: deliverable, terms: [deliverable], templates: {plain: "काम: {deliverable}"}}
+  - {key: price, terms: [price], templates: {plain: "फीस: {price}"}}
+  - {key: payment_schedule, terms: [payment_schedule], templates: {plain: "भुगतान: {payment_schedule}"}}
+  - {key: deadline, terms: [deadline], templates: {plain: "आखिरी तारीख: {deadline}"}}
+  - {key: revisions, terms: [revisions], templates: {plain: "शामिल बदलाव: {revisions}"}}
+  - {key: ownership, terms: [ownership], templates: {plain: "मालिकाना हक: {ownership}"}}
+  - {key: cancellation, terms: [cancellation], templates: {plain: "काम रद्द होने पर: {cancellation}"}}

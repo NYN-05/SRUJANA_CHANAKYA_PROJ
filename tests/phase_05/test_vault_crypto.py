@@ -101,3 +101,28 @@ def test_kdf_parameters_recorded_in_header(tmp_path, fast_kdf):
     v, _ = Vault.create(tmp_path / "v", "p", kdf=fast_kdf)
     assert v.kdf_params() == fast_kdf
     v.lock()
+
+
+def test_every_operation_refuses_when_locked(tmp_path, fast_kdf):
+    v, _ = Vault.create(tmp_path / "v", "p", kdf=fast_kdf)
+    v.lock()
+    v.lock()  # locking twice is harmless
+    for call in (lambda: v.self_check(), lambda: v.audit_events(None), lambda: v.change_passphrase("x")):
+        with pytest.raises(VaultLocked):
+            call()
+
+
+def test_unlock_needs_a_secret(tmp_path, fast_kdf):
+    v, _ = Vault.create(tmp_path / "v", "p", kdf=fast_kdf)
+    v.lock()
+    with pytest.raises(TypeError):
+        Vault.unlock(tmp_path / "v")
+    with pytest.raises(WrongPassphrase):
+        Vault.unlock(tmp_path / "v", recovery_key="not a key")
+
+
+def test_recovery_key_format(tmp_path, fast_kdf):
+    v, rk = Vault.create(tmp_path / "v", "p", kdf=fast_kdf)
+    v.lock()
+    assert len(rk.replace("-", "")) == 32
+    Vault.unlock(tmp_path / "v", recovery_key=rk.lower().replace("-", " ")).lock()  # case, spaces and dashes do not matter

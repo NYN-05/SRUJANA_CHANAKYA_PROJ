@@ -293,7 +293,7 @@ class Suggestion(Contract):
     tone: Tone
     language: str
     text: str
-    needs_user_input: bool = False
+    needs_user_input: list[str] = []  # term keys whose value the user must fill in
 
 
 # ---- recap ----
@@ -312,6 +312,7 @@ class RecapDraft(Contract):
     lines: list[RecapLine]
     body_text: str
     omitted_terms: list[tuple[str, str]] = []  # (term key, reason)
+    closing: str = ""  # the closing line with a {code} slot; never hashed (D1)
 
 
 class Recap(RecapDraft):
@@ -321,6 +322,16 @@ class Recap(RecapDraft):
     recap_hash: bytes
     echo_code: Annotated[str, StringConstraints(pattern=r"^[0-9A-HJKMNP-TV-Z]{4}$")]
     text: str
+
+
+class ConfirmationResult(Contract):
+    """The outcome of checking a pasted reply. A failed check is a result, never an exception."""
+
+    state: ConfirmationState
+    failure_reason: Literal["code_mismatch", "stale_code", "wrong_sender", "no_code"] | None = None
+    sender_entered_by_user: bool = False
+    message_en: str
+    message_hi: str
 
 
 # ---- verification ----
@@ -336,6 +347,7 @@ DifferenceKind = Literal[
     "import_record",
     "chain_link",
     "root",
+    "receipt",
 ]
 
 

@@ -56,6 +56,32 @@ def test_schema_restricts_keys_and_states(supply_playbook):
     assert term.get("additionalProperties") is False
 
 
+def test_system_text_lists_the_playbook_keys(supply_playbook):
+    system = build_prompt(make_messages(RAJU_MEENA), supply_playbook).system
+    assert all(f"- {t.key}:" in system for t in supply_playbook.terms)
+
+
+def test_given_fence_token_is_used_unless_the_chat_contains_it(supply_playbook):
+    msgs = make_messages(RAJU_MEENA)
+    assert build_prompt(msgs, supply_playbook, fence_token="FENCE-0123456789ABCDEF").fence_token == "FENCE-0123456789ABCDEF"
+    clash = make_messages([("Raju", "see FENCE-0123456789ABCDEF here")])
+    assert build_prompt(clash, supply_playbook, fence_token="FENCE-0123456789ABCDEF").fence_token != "FENCE-0123456789ABCDEF"
+
+
+def test_system_lines_are_never_sent(supply_playbook):
+    msgs = make_messages(RAJU_MEENA)
+    msgs[0] = msgs[0].model_copy(update={"is_system": True})
+    inner = build_prompt(msgs, supply_playbook).data_block.strip()
+    assert [r["seq"] for r in json.loads(inner.split("\n")[1])] == [2, 3, 4, 5]
+
+
+def test_schema_is_json_serialisable_and_requires_every_field(supply_playbook):
+    schema = build_prompt(make_messages(RAJU_MEENA), supply_playbook).schema
+    json.dumps(schema)
+    assert schema["additionalProperties"] is False and schema["required"] == ["terms"]
+    assert set(schema["properties"]["terms"]["items"]["required"]) == {"key", "value", "unit", "state", "source_seqs", "quote", "confidence"}
+
+
 def test_only_eligible_messages_are_sent(supply_playbook):
     msgs = make_messages(RAJU_MEENA)
     p = build_prompt(msgs, supply_playbook, eligible_ids={msgs[0].id, msgs[1].id})

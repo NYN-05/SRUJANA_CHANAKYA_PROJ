@@ -23,3 +23,14 @@ def precision_recall_f1(gold: Mapping[str, Any], proposed: Mapping[str, Any]) ->
         for k in sorted({*gold, *proposed})
     }
     return {"precision": precision, "recall": recall, "f1": f1, "per_key": per_key}
+
+
+def ai_contribution(gold: Mapping[str, Any], rules_only: Mapping[str, Any], rules_and_ai: Mapping[str, Any]) -> dict[str, Any]:
+    """What the model adds (AI_SPEC section 10): the scores of the rules alone, of rules plus model, and the difference.
+    The trust report prints it; a model that does not improve on the rules does not ship in the default tier."""
+    before, after = precision_recall_f1(gold, rules_only), precision_recall_f1(gold, rules_and_ai)
+    return {
+        "rules_only": before,
+        "rules_and_ai": after,
+        "delta": {name: after[name] - before[name] for name in ("precision", "recall", "f1")},
+    }

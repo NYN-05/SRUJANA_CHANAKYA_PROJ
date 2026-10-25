@@ -65,6 +65,36 @@ def test_contradiction_lists_both_sources_and_values(supply_playbook):
     assert "#2" in c[0].reason_en and "#4" in c[0].reason_en
 
 
+def test_contradiction_reason_in_hindi_and_names(supply_playbook):
+    d = sample_draft("contradictory.txt", "Patel", "Sai")
+    terms = extract_terms(d.messages, supply_playbook, me_id=d.me_id, counterparty_id=d.counterparty_id, date_order="DMY", eligible_ids=d.eligible_message_ids)
+    flags = build_flags(terms, supply_playbook, d.messages, me_id=d.me_id, counterparty_id=d.counterparty_id, names={"Patel": "Mr Patel"})
+    c = by_type(flags, FlagType.CONTRADICTION)[0]
+    assert "₹50,000" in c.reason_hi and "संदेश #2" in c.reason_hi
+    assert c.rule_id == "contradiction"
+
+
+def test_unacknowledged_uses_display_names(supply_playbook):
+    msgs = make_messages([("Raju", "200 shirts, 480 each"), ("Meena", "no"), ("Raju", "late fee 500 per day")])
+    terms = list(rules_terms(msgs, supply_playbook).values())
+    flags = build_flags(terms, supply_playbook, msgs, me_id="Raju", counterparty_id="Meena", names={"Raju": "Raju bhai"})
+    assert any("Raju bhai" in f.reason_en for f in by_type(flags, FlagType.UNACKNOWLEDGED))
+
+
+def test_legal_hint_keyword_cites_the_message(supply_playbook):
+    flags, msgs = flags_for([("Raju", "flat on lease, rent 20,000"), ("Meena", "ok")], supply_playbook)
+    hint = next(f for f in by_type(flags, FlagType.REGISTRATION_HINT) if f.rule_id == "property_hint")
+    assert hint.term_key is None and hint.source_refs[0].message_id == msgs[0].id
+    assert hint.reason_hi.strip()
+
+
+def test_vague_unclear_reason_without_a_rule_becomes_needs_review(supply_playbook):
+    msgs = make_messages(RAJU_MEENA)
+    terms = [t.model_copy(update={"unclear_reason": "no_such_rule"}) if t.key == "delivery_date" else t for t in rules_terms(msgs, supply_playbook).values()]
+    flags = build_flags(terms, supply_playbook, msgs, me_id="Raju", counterparty_id="Meena")
+    assert [f.term_key for f in by_type(flags, FlagType.NEEDS_REVIEW)] == ["delivery_date"]
+
+
 def test_unacknowledged(supply_playbook):
     flags, _ = flags_for([("Raju", "200 shirts, 480 each"), ("Meena", "ok"), ("Raju", "late fee 500 per day")], supply_playbook)
     un = by_type(flags, FlagType.UNACKNOWLEDGED)
